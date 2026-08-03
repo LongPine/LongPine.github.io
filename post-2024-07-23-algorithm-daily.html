@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>算法题训练记录：从入门到坚持 · notes</title>
+<meta name="description" content="开始系统刷算法题的第一周：从每天一道到形成习惯，记录方法、进度与踩坑。">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="page-post">
+
+<!-- 顶栏 -->
+<div class="topbar">
+  <div class="topbar-in">
+    <a class="logo" href="index.html"><span class="mark">~</span><span class="name"><b>notes</b><small>TAO 的技术笔记</small></span></a>
+    <nav class="main-nav">
+      <a href="index.html">首页</a>
+      <a href="archive.html">归档</a>
+      <a class="active" href="category.html">分类</a>
+      <a href="tags.html">标签</a>
+      <a href="about.html">关于</a>
+    </nav>
+    <div class="top-right">
+      <div class="search"><input placeholder="搜索文章…" aria-label="搜索"><kbd>Ctrl K</kbd></div>
+      <a class="icon-link" href="feed.xml" title="RSS 订阅" aria-label="RSS 订阅"><svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M2.002 2.725a.75.75 0 0 1 .797-.699C8.79 2.42 13.58 7.21 13.974 13.201a.75.75 0 0 1-1.497.098 10.502 10.502 0 0 0-9.776-9.776.747.747 0 0 1-.7-.798zM2.84 7.05h-.002a7.958 7.958 0 0 1 6.11 2.912 7.958 7.958 0 0 1 1.994 5.17.75.75 0 0 1-1.5.025 6.437 6.437 0 0 0-1.505-4.085 6.437 6.437 0 0 0-4.178-2.047.75.75 0 0 1-.92-.726v-.001c0-.426.275-.792.658-.933.17-.059.336-.117.5-.166z"/><path d="M2.72 13.004a1.742 1.742 0 1 1 1.26.509 1.74 1.74 0 0 1-1.26-.509z"/></svg></a>
+      <a class="icon-link" href="https://github.com/LongPine" target="_blank" rel="noopener" title="GitHub" aria-label="GitHub"><svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a>
+      <a class="btn-sub" href="about.html">订阅</a>
+      <button class="nav-toggle" type="button" aria-label="菜单" aria-expanded="false">☰</button>
+    </div>
+  </div>
+  <nav class="mobile-nav">
+      <a href="index.html">首页</a>
+      <a href="archive.html">归档</a>
+      <a class="active" href="category.html">分类</a>
+      <a href="tags.html">标签</a>
+      <a href="about.html">关于</a>
+  </nav>
+</div>
+
+<div class="layout">
+  <!-- 侧边栏 -->
+  <aside class="sidebar">
+    <div class="side-card">
+    <div class="group">分类</div>
+        <a class="nav" href="category.html#life">读研日常 <small>1</small></a>
+    </div>
+    <div class="about-card">
+      <div class="av">T</div>
+      <b>TAO</b>
+      <p>计算机研究生 · 模型轻量化与边缘计算。白天调模型，晚上写代码。</p>
+      <a class="more" href="about.html">关于我 →</a>
+    </div>
+  </aside>
+
+  <!-- 文章 -->
+  <main class="article">
+    <div class="breadcrumb"><a href="index.html">首页</a> / <a href="category.html">读研日常</a> / <b>正文</b></div>
+
+    <header class="post-head">
+      <a class="cat" href="category.html">读研日常</a>
+      <h1>算法题训练记录：从入门到坚持</h1>
+      <p class="desc">开始系统刷算法题的第一周：从每天一道到形成习惯，记录方法、进度与踩坑。</p>
+      <div class="author">
+        <div class="av">T</div>
+        <div class="info"><b>TAO</b>发布于 2024-07-23 · 阅读约 2 分钟 · 最后编辑 2024-07-23</div>
+      </div>
+    </header>
+
+    <article class="prose">
+<h2 id="为什么要刷算法题">为什么要刷算法题</h2>
+<p>模型轻量化的实验经常要等 GPU，等待的时间正好用来刷题。一周下来发现，<strong>碎片时间 + 一道题</strong>是最好坚持的节奏。</p>
+<h2 id="本周记录">本周记录</h2>
+<ul><li>数组与哈希表：5 题</li><li>双指针：3 题</li><li>动态规划入门：2 题</li></ul>
+<h2 id="心得">心得</h2>
+<blockquote><p>刷题不是为了面试，是为了让脑子保持"能想到最优解"的状态。每天一道，比周末十道有效得多。</p></blockquote>
+    </article>
+
+    <div class="post-foot">
+      <div class="tags">
+        <a href="tags.html#算法题">#算法题</a>
+      </div>
+      <span class="updated">由 GitHub Actions 自动构建 · 修订于 2024-07-23</span>
+    </div>
+
+    <nav class="pager">
+      <a class="prev" href="archive.html"><span class="lbl">← 返回归档</span><div class="t">查看文章列表</div></a>
+    </nav>
+
+    <div class="related">
+      <h3>📎 相关文章</h3>
+      <div class="grid">
+
+      </div>
+    </div>
+  </main>
+
+  <!-- 右侧栏 -->
+  <aside class="rail">
+    <div class="toc show">
+      <div class="toc-title">本页目录</div>
+      <a href="#为什么要刷算法题">为什么要刷算法题</a>
+      <a href="#本周记录">本周记录</a>
+      <a href="#心得">心得</a>
+    </div>
+    
+  </aside>
+</div>
+
+<!-- 页脚 -->
+<footer class="site-footer">
+  <div class="in">
+    <div>
+      <h4>~/notes 技术笔记</h4>
+      <p>计算机研究生的技术博客：模型轻量化、边缘计算与读研日常。内容以 Markdown 写作，托管于 GitHub Pages。</p>
+    </div>
+    <div>
+      <h4>站点</h4>
+      <ul><li><a href="index.html">首页</a></li><li><a href="archive.html">归档</a></li><li><a href="tags.html">标签</a></li><li><a href="about.html">关于我</a></li></ul>
+    </div>
+    <div>
+      <h4>联系</h4>
+      <ul><li><a href="https://github.com/LongPine" target="_blank" rel="noopener">GitHub</a></li><li><a href="#">Email</a></li><li><a href="feed.xml">RSS</a></li><li><a href="#">知乎</a></li></ul>
+    </div>
+    <div>
+      <h4>常用链接</h4>
+      <ul><li><a href="about.html">实验室主页</a></li><li><a href="archive.html">论文清单</a></li><li><a href="category.html#reading">读书笔记</a></li></ul>
+    </div>
+  </div>
+  <div class="bottom">
+    <span>© 2024 TAO · 内容 CC BY 4.0</span>
+    <span>由 GitHub Pages 免费托管 · 共 1 篇 · 最近更新 2024-07-23</span>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

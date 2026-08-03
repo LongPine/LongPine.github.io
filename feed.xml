@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>~/notes 技术笔记</title>
+    <link>https://LongPine.github.io/</link>
+    <description>计算机研究生的技术博客：分布式系统、论文阅读与读研日常。</description>
+    <language>zh-cn</language>
+    <atom:link href="https://LongPine.github.io/feed.xml" rel="self" type="application/rss+xml"/>
+    <lastBuildDate>Sat, 20 Jul 2024 10:00:00 +0800</lastBuildDate>
+
+    <!-- ITEMS:BEGIN -->
+    <item>
+      <title>算法题训练记录：从入门到坚持</title>
+      <link>https://LongPine.github.io/post-2024-07-23-algorithm-daily.html</link>
+      <guid>https://LongPine.github.io/post-2024-07-23-algorithm-daily.html#2024-07-23</guid>
+      <pubDate>Tue, 23 Jul 2024 10:00:00 +0800</pubDate>
+      <description>开始系统刷算法题的第一周：从每天一道到形成习惯，记录方法、进度与踩坑。</description>
+    </item>
+<!-- ITEMS:END -->
+  </channel>
+</rss>
