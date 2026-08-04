@@ -11,7 +11,7 @@
 流程：写 Markdown → 运行本脚本 → git add . && git commit && git push
 脚本会自动：生成文章详情页，并同步更新首页、归档、分类、标签、RSS、侧栏。
 """
-import io, os, re, sys, json, datetime
+import io, os, re, sys, json, datetime, html
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent
@@ -168,6 +168,24 @@ def load_posts():
 def cat_link(page, cat_id, name, count):
     href = '#' + cat_id if page == 'category' else 'category.html#' + cat_id
     return '    <a class="nav" href="%s">%s <small>%d</small></a>' % (href, name, count)
+
+def render_timeline():
+    """关于页时间线（数据驱动：data/timeline.json）"""
+    tl_file = BASE / 'data' / 'timeline.json'
+    items = []
+    if tl_file.exists():
+        try:
+            items = json.loads(tl_file.read_text(encoding='utf-8'))
+        except Exception:
+            items = []
+    if not items:
+        return ''
+    return '\n'.join(
+        '<div class="tl-item"><div class="tl-date">%s</div><div class="tl-dot"></div>'
+        '<div class="tl-body"><b>%s</b><p>%s</p></div></div>'
+        % (html.escape(str(item.get('date', ''))), html.escape(str(item.get('title', ''))), html.escape(str(item.get('desc', ''))))
+        for item in items
+    )
 
 def render_sidecats(posts, page):
     counts = {}
@@ -416,7 +434,7 @@ def rebuild_all(posts):
     update_blocks('archive.html', {'ARCHIVE': render_archive(posts), 'RECENT': render_recent(posts), 'SIDECATS': render_sidecats(posts, 'archive')})
     update_blocks('category.html', {'CATEGORY': render_category(posts), 'RECENT': render_recent(posts), 'SIDECATS': render_sidecats(posts, 'category')})
     update_blocks('tags.html', {'TAGS': render_tags(posts), 'RECENT': render_recent(posts), 'SIDECATS': render_sidecats(posts, 'tags')})
-    update_blocks('about.html', {'RECENT': render_recent(posts), 'SIDECATS': render_sidecats(posts, 'about')})
+    update_blocks('about.html', {'TIMELINE': render_timeline(), 'RECENT': render_recent(posts), 'SIDECATS': render_sidecats(posts, 'about')})
     update_blocks('post.html', {'SIDECATS': render_sidecats(posts, 'post')})
     # feed.xml
     update_blocks('feed.xml', {'ITEMS': render_feed(posts)})
