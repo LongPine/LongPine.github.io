@@ -474,7 +474,7 @@
       .then(function (res) { return res.ok ? res.json() : null; })
       .then(function (d) {
         if (d && d.content) {
-          try { tlItems = JSON.parse(atob(d.content.replace(/\s/g, ''))); } catch (e) { tlItems = []; }
+          try { tlItems = JSON.parse(b64decode(d.content)); } catch (e) { tlItems = []; }
           if (!Array.isArray(tlItems)) tlItems = [];
           state.tlSha = d.sha;
         } else {
