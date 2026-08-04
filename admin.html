@@ -138,7 +138,12 @@
   .meta-grid input[type=text]:hover, .meta-grid input[type=date]:hover, .meta-grid select.sel:hover, .tag-sel:hover { border-color:#b6bcc4; }
   .meta-grid input[type=text]:focus, .meta-grid input[type=date]:focus, .meta-grid select.sel:focus { border-color:var(--blue); box-shadow:0 0 0 3px rgba(37,99,235,.1); }
   .tag-sel { position:relative; display:flex; align-items:center; gap:6px; cursor:pointer; white-space:nowrap; }
-  .tag-sel .val { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .tag-sel .val { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:flex; align-items:center; gap:4px; flex-wrap:nowrap; }
+  .tag-sel .val .ts-ph { color:var(--faint); font-size:12px; }
+  .tag-sel .val .chip { display:inline-flex; align-items:center; gap:3px; background:var(--accent-soft); color:var(--accent-strong); border:1px solid var(--accent-border); border-radius:8px; padding:1px 7px; font-size:11px; line-height:1.6; max-width:120px; }
+  .tag-sel .val .chip .chip-x { width:10px; height:10px; color:var(--accent); cursor:pointer; flex-shrink:0; opacity:.7; transition:.15s; }
+  .tag-sel .val .chip .chip-x:hover { opacity:1; color:var(--red); }
+  .tag-sel .val .chip:hover { border-color:var(--accent); }
   .tag-sel .chev { width:11px; height:11px; color:var(--faint); flex-shrink:0; }
   .tag-sel.open { border-color:var(--blue); box-shadow:0 0 0 3px rgba(37,99,235,.1); }
   .ts-panel { position:absolute; top:calc(100% + 4px); left:0; right:0; min-width:200px; max-height:200px; overflow-y:auto; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 12px 32px rgba(0,0,0,.14); z-index:60; padding:4px; }
@@ -288,7 +293,7 @@
         </div>
         <div class="meta-item"><span class="m-label">标签</span>
           <div class="tag-sel" id="tag-sel">
-            <span class="val" id="tag-sel-value">未选择</span>
+            <div class="val" id="tag-sel-value"></div>
             <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
             <div class="ts-panel" id="tag-sel-panel" hidden>
               <div id="tag-sel-list"></div>
