@@ -1,0 +1,42 @@
+ # ============================================================
+   # 博客自动构建 & 部署
+   # 触发时机：push 到 main 分支（新增/修改 posts/*.md 时）
+   # 流程：安装 Python → 运行 publish.py 重建全站 → 提交回 main
+   # Pages 源：main 分支（保持现状，无需改）
+   # ============================================================
+   name: Build & Deploy
+
+   on:
+     push:
+       branches: [main]
+       paths:
+         - 'posts/**'
+         - 'publish.py'
+         - 'post-template.html'
+     workflow_dispatch:        # 支持手动触发
+
+   permissions:
+     contents: write
+
+   jobs:
+     build:
+       runs-on: ubuntu-latest
+       steps:
+         - name: Checkout
+           uses: actions/checkout@v4
+
+         - name: Setup Python
+           uses: actions/setup-python@v5
+           with:
+             python-version: '3.11'
+
+         - name: Rebuild site from posts/
+           run: python publish.py --rebuild
+
+         - name: Commit updated HTML back to main
+           run: |
+             git config user.name "LongPine"
+             git config user.email "LongPine@users.noreply.github.com"
+             git add -A
+             git diff --cached --quiet || git commit -m "build: rebuild site from posts"
+             git push
