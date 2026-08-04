@@ -355,13 +355,14 @@
     switchTab(tab || 'publish');
     if (tab === 'cats') renderMgrCats();
     if (tab === 'tags') renderMgrTags();
+    if (tab === 'tl') loadTimeline();
     $('settings-mask').classList.add('show');
   }
   function switchTab(tab) {
     document.querySelectorAll('.settings-tabs button').forEach(function (b) {
       b.classList.toggle('active', b.getAttribute('data-stab') === tab);
     });
-    ['publish', 'cats', 'tags'].forEach(function (t) {
+    ['publish', 'cats', 'tags', 'tl'].forEach(function (t) {
       $('stab-' + t).hidden = t !== tab;
     });
   }
@@ -371,6 +372,7 @@
       switchTab(tab);
       if (tab === 'cats') renderMgrCats();
       if (tab === 'tags') renderMgrTags();
+      if (tab === 'tl') loadTimeline();
     });
   });
   $('btn-settings').addEventListener('click', function () { showSettings('publish'); });
@@ -461,6 +463,79 @@
   }
   $('mgr-tag-add').addEventListener('click', addTagPool);
   $('mgr-tag-new').addEventListener('keydown', function (e) { if (e.key === 'Enter') addTagPool(); });
+
+  /* ================ 关于时间线管理 ================ */
+  var tlItems = [];
+  var TL_PATH = 'data/timeline.json';
+  function loadTimeline() {
+    var s = getSettings();
+    if (!s.owner || !s.repo || !s.token) return;
+    gh(s, '/repos/' + s.owner + '/' + s.repo + '/contents/' + TL_PATH)
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (d) {
+        if (d && d.content) {
+          try { tlItems = JSON.parse(atob(d.content.replace(/\s/g, ''))); } catch (e) { tlItems = []; }
+          if (!Array.isArray(tlItems)) tlItems = [];
+          state.tlSha = d.sha;
+        } else {
+          tlItems = [];
+        }
+        renderTlList();
+      })
+      .catch(function () { tlItems = []; renderTlList(); });
+  }
+  function renderTlList() {
+    var el = $('mgr-tl-list');
+    if (!tlItems.length) {
+      el.innerHTML = '<div class="mgr-empty">暂无时间线条目，添加一个吧</div>';
+      return;
+    }
+    el.innerHTML = tlItems.map(function (it, i) {
+      return '<div class="mgr-item"><b style="color:var(--blue);font-family:var(--mono);font-size:11px;width:72px;flex-shrink:0">' + esc(it.date || '') + '</b>' +
+        '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><b>' + esc(it.title || '') + '</b>' +
+        (it.desc ? '<span style="color:var(--faint);font-size:11px"> · ' + esc(it.desc) + '</span>' : '') + '</span>' +
+        '<span class="del" title="删除" data-i="' + i + '">×</span></div>';
+    }).join('');
+    el.querySelectorAll('.del[data-i]').forEach(function (del) {
+      del.addEventListener('click', function () {
+        tlItems.splice(+del.getAttribute('data-i'), 1);
+        renderTlList();
+      });
+    });
+  }
+  function addTimelineItem() {
+    var d = $('tl-date').value.trim(), t = $('tl-title').value.trim(), de = $('tl-desc').value.trim();
+    if (!d || !t) { setStatus('请填写日期和标题', 'err'); return; }
+    tlItems.push({ date: d, title: t, desc: de });
+    $('tl-date').value = ''; $('tl-title').value = ''; $('tl-desc').value = '';
+    renderTlList();
+  }
+  function saveTimeline() {
+    var s = getSettings();
+    if (!s.owner || !s.repo || !s.token) { setStatus('请先完成「设置」配置', 'err'); showSettings('publish'); return; }
+    var btn = $('tl-save'), old = btn.textContent;
+    btn.disabled = true; btn.textContent = '保存中…';
+    var body = { message: '更新: 关于时间线', content: b64encode(JSON.stringify(tlItems, null, 2)) };
+    if (state.tlSha) body.sha = state.tlSha;
+    gh(s, '/repos/' + s.owner + '/' + s.repo + '/contents/' + TL_PATH, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    })
+      .then(function (res) { return res.ok ? res.json() : Promise.reject(new Error(ghError(res))); })
+      .then(function (d) {
+        state.tlSha = d.content.sha;
+        return gh(s, '/repos/' + s.owner + '/' + s.repo + '/actions/workflows/deploy.yml/dispatches', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ref: 'main' })
+        });
+      })
+      .then(function (res) {
+        setStatus(res.ok || res.status === 204 ? '时间线已保存，正在重建博客（1-2 分钟）' : '时间线已保存，但触发重建失败（可手动去 Actions 跑一次）', 'ok', true);
+      })
+      .catch(function (e) { setStatus('保存失败：' + e.message, 'err'); })
+      .then(function () { btn.disabled = false; btn.textContent = old; });
+  }
+  $('tl-add').addEventListener('click', addTimelineItem);
+  $('tl-title').addEventListener('keydown', function (e) { if (e.key === 'Enter') addTimelineItem(); });
+  $('tl-save').addEventListener('click', saveTimeline);
 
   /* ================ 预览 / 字数 ================ */
   function updatePreview() {
