@@ -467,6 +467,10 @@
   /* ================ 关于时间线管理 ================ */
   var tlItems = [];
   var TL_PATH = 'data/timeline.json';
+  function sortTl() {
+    // 按日期倒序（最新在前），日期格式 YYYY.MM 或 YYYY-MM-DD
+    tlItems.sort(function (a, b) { return String(b.date || '').localeCompare(String(a.date || '')); });
+  }
   function loadTimeline() {
     var s = getSettings();
     if (!s.owner || !s.repo || !s.token) return;
@@ -480,6 +484,7 @@
         } else {
           tlItems = [];
         }
+        sortTl();
         renderTlList();
       })
       .catch(function () { tlItems = []; renderTlList(); });
@@ -494,19 +499,47 @@
       return '<div class="mgr-item"><b style="color:var(--blue);font-family:var(--mono);font-size:11px;width:72px;flex-shrink:0">' + esc(it.date || '') + '</b>' +
         '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><b>' + esc(it.title || '') + '</b>' +
         (it.desc ? '<span style="color:var(--faint);font-size:11px"> · ' + esc(it.desc) + '</span>' : '') + '</span>' +
+        '<span class="del" title="编辑" data-e="' + i + '">✎</span>' +
         '<span class="del" title="删除" data-i="' + i + '">×</span></div>';
     }).join('');
+    el.querySelectorAll('.del[data-e]').forEach(function (btn) {
+      btn.addEventListener('click', function () { editTlItem(+btn.getAttribute('data-e')); });
+    });
     el.querySelectorAll('.del[data-i]').forEach(function (del) {
       del.addEventListener('click', function () {
         tlItems.splice(+del.getAttribute('data-i'), 1);
+        sortTl();
         renderTlList();
       });
     });
+  }
+  function editTlItem(i) {
+    var it = tlItems[i];
+    var row = $('mgr-tl-list').querySelectorAll('.mgr-item')[i];
+    row.innerHTML = '<div class="tl-edit">' +
+      '<input id="tl-e-date" value="' + esc(it.date || '') + '" placeholder="日期" style="width:86px;flex-shrink:0">' +
+      '<input id="tl-e-title" value="' + esc(it.title || '') + '" placeholder="标题">' +
+      '<input id="tl-e-desc" value="' + esc(it.desc || '') + '" placeholder="描述（可选）" style="flex:1.4">' +
+      '</div>' +
+      '<div class="tl-edit-ops"><button class="btn btn-primary" id="tl-e-ok">保存</button>' +
+      '<button class="btn" id="tl-e-cancel">取消</button></div>';
+    $('tl-e-ok').addEventListener('click', function () {
+      tlItems[i] = {
+        date: $('tl-e-date').value.trim() || it.date,
+        title: $('tl-e-title').value.trim() || it.title,
+        desc: $('tl-e-desc').value.trim()
+      };
+      sortTl();
+      renderTlList();
+    });
+    $('tl-e-cancel').addEventListener('click', renderTlList);
+    $('tl-e-title').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('tl-e-ok').click(); });
   }
   function addTimelineItem() {
     var d = $('tl-date').value.trim(), t = $('tl-title').value.trim(), de = $('tl-desc').value.trim();
     if (!d || !t) { setStatus('请填写日期和标题', 'err'); return; }
     tlItems.push({ date: d, title: t, desc: de });
+    sortTl();
     $('tl-date').value = ''; $('tl-title').value = ''; $('tl-desc').value = '';
     renderTlList();
   }
@@ -515,6 +548,7 @@
     if (!s.owner || !s.repo || !s.token) { setStatus('请先完成「设置」配置', 'err'); showSettings('publish'); return; }
     var btn = $('tl-save'), old = btn.textContent;
     btn.disabled = true; btn.textContent = '保存中…';
+    sortTl();
     var body = { message: '更新: 关于时间线', content: b64encode(JSON.stringify(tlItems, null, 2)) };
     if (state.tlSha) body.sha = state.tlSha;
     gh(s, '/repos/' + s.owner + '/' + s.repo + '/contents/' + TL_PATH, {
