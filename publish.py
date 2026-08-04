@@ -148,6 +148,8 @@ def parse_md(path):
 def load_posts():
     posts = []
     for p in sorted(POSTS_DIR.glob('*.md')):
+        if '_drafts' in p.parts:
+            continue  # 草稿不发布
         meta, body = parse_md(p)
         meta['body'] = body
         meta['link'] = 'post-' + meta['slug'] + '.html'
