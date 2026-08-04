@@ -39,3 +39,4 @@
              github_token: ${{ secrets.GITHUB_TOKEN }}
              publish_dir: ./
              force_orphan: true
+             exclude_assets: '.github,posts,publish.py,post-template.html,README.md'
