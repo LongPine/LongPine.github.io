@@ -190,7 +190,21 @@
     syncTagSel();
   }
   function syncTagSel() {
-    $('tag-sel-value').textContent = tagChips.length ? tagChips.join(', ') : '未选择';
+    var el = $('tag-sel-value');
+    if (!tagChips.length) {
+      el.innerHTML = '<span class="ts-ph">未选择</span>';
+    } else {
+      el.innerHTML = tagChips.map(function (t) {
+        return '<span class="chip" data-t="' + esc(t) + '">' + esc(t) +
+          '<svg class="chip-x" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></span>';
+      }).join('');
+      el.querySelectorAll('.chip').forEach(function (chip) {
+        chip.addEventListener('click', function (e) {
+          e.stopPropagation();
+          toggleTag(chip.getAttribute('data-t'));
+        });
+      });
+    }
     $('f-tags').value = tagChips.join(', ');
   }
   function toggleTag(t) {
