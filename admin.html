@@ -363,6 +363,7 @@
       <button class="active" data-stab="publish">发布设置</button>
       <button data-stab="cats">分类管理</button>
       <button data-stab="tags">标签管理</button>
+      <button data-stab="tl">关于时间线</button>
     </div>
     <div class="stab" id="stab-publish">
       <div class="field"><label>GitHub 用户名</label><input type="text" id="s-owner" placeholder="your-username"></div>
@@ -385,6 +386,17 @@
       <div class="note mgr-note">这里的标签是<b>写作时的快捷选项</b>。博客的标签页会自动从已发布的文章聚合：文章里用了什么标签，博客就显示什么标签。</div>
       <div class="mgr-list" id="mgr-tag-list"></div>
       <div class="mgr-add"><input type="text" id="mgr-tag-new" placeholder="新标签名"><button class="btn btn-primary" id="mgr-tag-add">添加</button></div>
+    </div>
+    <div class="stab" id="stab-tl" hidden>
+      <div class="note mgr-note">管理「关于」页的<b>时间线</b>。保存后自动触发博客重建（1-2 分钟）。数据存在 <code>data/timeline.json</code>。</div>
+      <div class="mgr-list" id="mgr-tl-list"></div>
+      <div class="mgr-add" style="flex-wrap:wrap">
+        <input type="text" id="tl-date" placeholder="日期 2024.07" style="flex:0 0 96px">
+        <input type="text" id="tl-title" placeholder="标题">
+        <input type="text" id="tl-desc" placeholder="描述（可选）" style="flex:1 1 100%;margin-top:6px">
+        <button class="btn btn-primary" id="tl-add" style="flex:1;margin-top:6px">添加条目</button>
+      </div>
+      <button class="btn btn-primary" id="tl-save" style="width:100%;margin-top:10px">💾 保存到博客并重建</button>
     </div>
   </div>
 </div>
