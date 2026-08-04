@@ -148,6 +148,7 @@
   function makeMarkdown(d) {
     var fm = '---\ntitle: ' + d.title + '\ndate: ' + d.date + '\ncategory: ' + d.category +
       '\ntags: [' + d.tags.join(', ') + ']\nsummary: ' + d.summary + '\n';
+    if (d.featured) fm += 'featured: ' + d.featured + '\n';
     fm += '---\n';
     return fm + d.body.replace(/^\n+/, '');
   }
