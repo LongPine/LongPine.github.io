@@ -767,20 +767,31 @@ pre .c{color:#64748b}pre .k{color:#c084fc}pre .s{color:#7dd3fc}pre .n{color:#fbb
 }
 
 /* ---------- 主编推荐 3 块 ---------- */
-.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px;padding:18px;border:1px dashed var(--accent-border);border-radius:var(--radius-lg);background:linear-gradient(180deg,rgba(37,99,235,.055),rgba(37,99,235,.015))}
-.feat-card{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:9px;padding:22px 20px 18px;border:1px solid var(--accent-border);border-radius:var(--radius-md);background:linear-gradient(160deg,#fff 40%,var(--accent-soft));text-decoration:none;color:inherit;box-shadow:var(--shadow-sm);transition:.22s var(--ease)}
+.feat-grid{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:repeat(2,auto);gap:16px;margin-top:28px}
+.feat-card{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:9px;padding:24px 22px 20px;border:1px solid var(--line-strong);border-radius:var(--radius-lg);background:#fff;text-decoration:none;color:inherit;box-shadow:var(--shadow-sm);transition:.25s var(--ease)}
+.feat-card>*{position:relative;z-index:1}
 .feat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--grad-brand)}
-.feat-card::after{content:'';position:absolute;top:-34px;right:-34px;width:100px;height:100px;background:radial-gradient(circle,rgba(37,99,235,.12),transparent 70%);pointer-events:none}
-.feat-card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:var(--shadow-lg)}
-.feat-no{font-size:30px;font-weight:800;letter-spacing:.04em;line-height:1;background:var(--grad-brand);-webkit-background-clip:text;background-clip:text;color:transparent}
-.feat-card:hover .feat-no{opacity:.85}
-.feat-cat{align-self:flex-start;font-size:10.5px;font-weight:700;color:var(--accent-strong);background:#fff;border:1px solid var(--accent-border);border-radius:12px;padding:2px 9px}
-.feat-card h3{font-size:16.5px;font-weight:700;line-height:1.45}
+.feat-card::after{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(37,99,235,.07),transparent 70%);pointer-events:none;z-index:0}
+.feat-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--accent-border)}
+.feat-no{font-family:var(--mono);font-weight:800;line-height:1;position:absolute;top:8px;right:16px;font-size:46px;color:rgba(37,99,235,.10);letter-spacing:.02em;z-index:0}
+.feat-cat{align-self:flex-start;font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--accent-strong);background:var(--accent-soft);border-radius:6px;padding:3px 10px}
+.feat-card h3{font-size:16px;font-weight:700;line-height:1.5;margin-top:2px}
 .feat-card:hover h3{color:var(--accent-strong)}
-.feat-card p{font-size:12.5px;color:var(--muted);line-height:1.7;flex:1}
-.feat-meta{font-size:11px;color:var(--faint)}
-.feat-empty{border-style:dashed;align-items:center;justify-content:center;text-align:center;color:var(--muted);min-height:170px}
+.feat-card p{font-size:12.5px;color:var(--muted);line-height:1.75;flex:1}
+.feat-meta{font-size:11px;color:var(--faint);font-family:var(--mono)}
+.feat-card:first-child{grid-row:span 2;justify-content:flex-end;padding:36px 32px 28px;background:var(--grad-brand);border:none;color:#fff;box-shadow:var(--shadow-lg)}
+.feat-card:first-child::before{display:none}
+.feat-card:first-child::after{background:radial-gradient(circle,rgba(255,255,255,.13),transparent 70%);top:-24px;right:-24px;width:240px;height:240px}
+.feat-card:first-child:hover{transform:translateY(-4px);border:none;box-shadow:0 20px 48px rgba(37,99,235,.32)}
+.feat-card:first-child .feat-no{font-size:92px;color:rgba(255,255,255,.13);top:16px;right:22px}
+.feat-card:first-child .feat-cat{background:rgba(255,255,255,.16);color:#fff}
+.feat-card:first-child h3{font-size:23px;color:#fff;max-width:12em}
+.feat-card:first-child:hover h3{color:#fff}
+.feat-card:first-child p{color:rgba(255,255,255,.82);font-size:13px}
+.feat-card:first-child .feat-meta{color:rgba(255,255,255,.6)}
+.feat-empty{border-style:dashed;align-items:center;justify-content:center;text-align:center;color:var(--muted);min-height:170px;grid-row:auto}
 .feat-empty b{color:var(--ink)}
-@media(max-width:960px){.feat-grid{grid-template-columns:1fr}}
+.feat-empty.feat-card::before{display:none}
+@media(max-width:960px){.feat-grid{grid-template-columns:1fr}.feat-card:first-child{grid-row:auto}}
 /* ---------- 侧栏卡片（与右侧目录看齐） ---------- */
 .side-card{background:var(--surface-card);border:1px solid var(--line);border-radius:12px;padding:16px}
