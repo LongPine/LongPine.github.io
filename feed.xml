@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>~/notes 技术笔记</title>
+    <link>https://LongPine.github.io/</link>
+    <description>计算机研究生的技术博客：分布式系统、论文阅读与读研日常。</description>
+    <language>zh-cn</language>
+    <atom:link href="https://LongPine.github.io/feed.xml" rel="self" type="application/rss+xml"/>
+    <lastBuildDate>Sat, 20 Jul 2024 10:00:00 +0800</lastBuildDate>
+
+    <!-- ITEMS:BEGIN -->
+    <item>
+      <title>数据标注</title>
+      <link>https://LongPine.github.io/post-2026-08-04-数据标注.html</link>
+      <guid>https://LongPine.github.io/post-2026-08-04-数据标注.html#2026-08-04</guid>
+      <pubDate>Tue, 04 Aug 2026 10:00:00 +0800</pubDate>
+      <description></description>
+    </item>
+    <item>
+      <title>模型轻量化入门：从剪枝到量化</title>
+      <link>https://LongPine.github.io/post-2024-07-25-model-compression.html</link>
+      <guid>https://LongPine.github.io/post-2024-07-25-model-compression.html#2024-07-25</guid>
+      <pubDate>Thu, 25 Jul 2024 10:00:00 +0800</pubDate>
+      <description>一次读完模型轻量化的核心方法：结构化剪枝、权重量化与知识蒸馏，附常用工具清单。</description>
+    </item>
+    <item>
+      <title>在树莓派上部署 YOLO 的完整记录</title>
+      <link>https://LongPine.github.io/post-2024-07-24-edge-deploy.html</link>
+      <guid>https://LongPine.github.io/post-2024-07-24-edge-deploy.html#2024-07-24</guid>
+      <pubDate>Wed, 24 Jul 2024 10:00:00 +0800</pubDate>
+      <description>从环境搭建到推理优化，把目标检测模型跑上树莓派 4B 的完整踩坑记录。</description>
+    </item>
+    <item>
+      <title>算法题训练记录：从入门到坚持</title>
+      <link>https://LongPine.github.io/post-2024-07-23-algorithm-daily.html</link>
+      <guid>https://LongPine.github.io/post-2024-07-23-algorithm-daily.html#2024-07-23</guid>
+      <pubDate>Tue, 23 Jul 2024 10:00:00 +0800</pubDate>
+      <description>开始系统刷算法题的第一周：从每天一道到形成习惯，记录方法、进度与踩坑。</description>
+    </item>
+<!-- ITEMS:END -->
+  </channel>
+</rss>
