@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="color-scheme" content="dark"/>
+<title>Agnes Studio · 帧动画工坊</title>
+<style>
+  :root{
+    --bg:#0a0c12;
+    --card:#131722;
+    --card2:#1a1f2e;
+    --border:rgba(255,255,255,.07);
+    --text:#e9ebf3;
+    --muted:#9aa1b5;
+    --accent:#7c6cff;
+    --accent2:#22d3ee;
+    --green:#34d399;
+    --red:#f87171;
+    --radius:16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  /* 保证 hidden 属性不被 display:flex 等样式覆盖 */
+  [hidden]{display:none !important}
+  html{scrollbar-color:#2a3042 transparent}
+  body{
+    font-family:"Inter","Segoe UI","PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",sans-serif;
+    background:
+      radial-gradient(1100px 700px at 78% -8%, rgba(124,108,255,.16), transparent 60%),
+      radial-gradient(900px 600px at -12% 108%, rgba(34,211,238,.10), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::-webkit-scrollbar{width:9px;height:9px}
+  ::-webkit-scrollbar-thumb{background:#262c40;border-radius:8px}
+  ::-webkit-scrollbar-thumb:hover{background:#333a52}
+  ::-webkit-scrollbar-track{background:transparent}
+
+  header{
+    position:sticky;top:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 24px;
+    background:rgba(10,12,18,.72);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border);
+  }
+  .logo{display:flex;align-items:center;gap:12px;font-weight:700;font-size:17px;letter-spacing:.3px}
+  .logo-mark{
+    width:34px;height:34px;border-radius:10px;
+    background:linear-gradient(135deg,var(--accent),#4f46e5 55%,var(--accent2));
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 18px rgba(124,108,255,.4);
+  }
+  .logo-mark svg{width:18px;height:18px}
+  .logo small{font-weight:500;color:var(--muted);font-size:12px;margin-left:4px;letter-spacing:1px}
+  .header-right{display:flex;align-items:center;gap:14px}
+  .badge{
+    font-size:12px;color:#c9d6ff;padding:6px 12px;border-radius:999px;
+    background:rgba(124,108,255,.14);border:1px solid rgba(124,108,255,.35);
+    display:flex;align-items:center;gap:6px;
+  }
+  .badge .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+  .docs-link{font-size:12px;color:var(--muted);text-decoration:none;transition:color .2s}
+  .docs-link:hover{color:var(--accent2)}
+
+  main{
+    display:grid;grid-template-columns:408px 1fr;gap:22px;
+    max-width:1640px;margin:0 auto;padding:22px 24px 60px;
+    align-items:start;
+  }
+  aside{
+    position:sticky;top:82px;
+    max-height:calc(100vh - 104px);
+    overflow-y:auto;padding-right:4px;
+  }
+  aside::-webkit-scrollbar{width:6px}
+
+  .card{
+    background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,0));
+    background-color:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px;
+    margin-bottom:14px;
+  }
+  .card > .label{
+    display:flex;align-items:center;justify-content:space-between;
+    font-size:12px;font-weight:600;color:var(--muted);
+    text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;
+  }
+
+  input[type=text],input[type=password],textarea,input[type=url],input[type=number]{
+    width:100%;background:#0e1119;border:1px solid var(--border);
+    border-radius:10px;color:var(--text);font-size:13.5px;
+    padding:11px 13px;outline:none;transition:border-color .2s, box-shadow .2s;
+    font-family:inherit;
+  }
+  input:focus,textarea:focus{
+    border-color:rgba(124,108,255,.6);
+    box-shadow:0 0 0 3px rgba(124,108,255,.16);
+  }
+  textarea{resize:vertical;min-height:88px;line-height:1.6}
+  ::placeholder{color:#5d6478}
+
+  .key-wrap{position:relative}
+  .key-wrap input{padding-right:42px}
+  .eye-btn{
+    position:absolute;right:8px;top:50%;transform:translateY(-50%);
+    background:none;border:none;color:var(--muted);cursor:pointer;
+    width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  }
+  .eye-btn:hover{color:var(--text);background:rgba(255,255,255,.06)}
+  .eye-btn svg{width:16px;height:16px}
+  .hint{font-size:11.5px;color:#6b7284;margin-top:8px;line-height:1.5}
+
+  .seg{display:flex;gap:6px;flex-wrap:wrap}
+  .seg button{
+    flex:1;min-width:64px;
+    background:#0e1119;border:1px solid var(--border);color:var(--muted);
+    border-radius:10px;padding:9px 8px;cursor:pointer;
+    font-size:13px;font-family:inherit;font-weight:500;
+    transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:2px;
+  }
+  .seg button small{font-size:10.5px;opacity:.75;font-weight:400}
+  .seg button:hover{border-color:rgba(124,108,255,.4);color:var(--text)}
+  .seg button.active{
+    background:linear-gradient(135deg,rgba(124,108,255,.22),rgba(34,211,238,.14));
+    border-color:rgba(124,108,255,.55);color:#fff;
+    box-shadow:0 2px 12px rgba(124,108,255,.18);
+  }
+  .seg.ratio button{flex:0 0 auto;min-width:0;padding:7px 11px;font-size:12.5px}
+
+  .fps-row{display:flex;align-items:center;gap:12px;margin-top:12px}
+  .fps-row input[type=range]{flex:1;accent-color:var(--accent)}
+  .fps-val{font-size:13px;color:var(--accent2);font-weight:600;min-width:34px;text-align:right;font-variant-numeric:tabular-nums}
+
+  .size-meta{
+    margin-top:10px;font-size:12.5px;color:var(--muted);
+    background:#0e1119;border:1px dashed var(--border);
+    border-radius:10px;padding:9px 12px;display:flex;align-items:center;gap:8px;
+  }
+  .size-meta b{color:var(--accent2);font-weight:600}
+
+  .btn-primary{
+    width:100%;border:none;cursor:pointer;border-radius:12px;
+    background:linear-gradient(135deg,#8b6cff,#6366f1 50%,#2ecfe6);
+    color:#fff;font-size:15px;font-weight:600;letter-spacing:2px;
+    padding:14px;display:flex;align-items:center;justify-content:center;gap:9px;
+    box-shadow:0 6px 24px rgba(124,108,255,.28);
+    transition:all .2s;font-family:inherit;
+  }
+  .btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 30px rgba(124,108,255,.38)}
+  .btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+  .btn-primary svg{width:16px;height:16px}
+
+  details{padding:12px 16px;border:1px solid var(--border);border-radius:12px;background:#0e1119;margin-top:14px}
+  summary{
+    cursor:pointer;font-size:12.5px;color:var(--muted);font-weight:600;
+    letter-spacing:.5px;user-select:none;
+  }
+  summary:hover{color:var(--text)}
+  pre{
+    margin-top:10px;font-size:11.5px;line-height:1.7;color:#a9c1d9;
+    background:#0a0d13;border:1px solid var(--border);border-radius:8px;
+    padding:10px;overflow:auto;max-height:280px;white-space:pre-wrap;word-break:break-all;
+  }
+
+  /* ---------- 结果区 ---------- */
+  .result-col{min-width:0;display:flex;flex-direction:column;gap:18px}
+  .result-box{
+    position:relative;background:var(--card);
+    border:1px solid var(--border);border-radius:var(--radius);
+    min-height:520px;display:flex;align-items:center;justify-content:center;
+    overflow:hidden;
+  }
+  #resultEmpty{text-align:center;color:var(--muted);padding:40px;display:flex;flex-direction:column;align-items:center;gap:18px}
+  .orb{
+    width:110px;height:110px;border-radius:50%;
+    background:
+      radial-gradient(circle at 30% 30%,rgba(255,255,255,.9),transparent 42%),
+      linear-gradient(135deg,#8b6cff,#6366f1 50%,#2ecfe6);
+    filter:blur(1px);
+    box-shadow:0 0 60px rgba(124,108,255,.45),0 0 120px rgba(34,211,238,.2);
+    animation:float 5s ease-in-out infinite;
+  }
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  #resultEmpty .t1{font-size:16px;color:#cfd5e4;font-weight:600}
+  #resultEmpty .t2{font-size:13px;max-width:360px;line-height:1.7}
+
+  #resultWrap{width:100%;height:100%;display:flex;flex-direction:column}
+  .result-toolbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 16px;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap;
+  }
+  .meta-chips{display:flex;gap:7px;flex-wrap:wrap}
+  .mchip{font-size:11.5px;color:#c4cbe0;background:#171c29;border:1px solid var(--border);border-radius:999px;padding:4px 10px}
+  .tool-group{display:flex;gap:8px;flex-wrap:wrap}
+  .tool-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    background:#171c29;border:1px solid var(--border);color:#c4cbe0;
+    border-radius:9px;padding:7px 12px;font-size:12px;cursor:pointer;
+    transition:all .18s;font-family:inherit;
+  }
+  .tool-btn:hover:not(:disabled){color:#fff;border-color:rgba(124,108,255,.55);background:rgba(124,108,255,.12)}
+  .tool-btn:disabled{opacity:.45;cursor:not-allowed}
+  .tool-btn svg{width:13px;height:13px}
+
+  .play-area{
+    display:flex;align-items:center;justify-content:center;gap:18px;
+    padding:20px;border-bottom:1px solid var(--border);
+    background:radial-gradient(600px 400px at 50% 30%,rgba(124,108,255,.07),transparent 70%);
+  }
+  #animCanvas{
+    max-width:100%;max-height:340px;border-radius:12px;
+    background:repeating-conic-gradient(#161a26 0% 25%, #10131d 0% 50%) 0 0/22px 22px;
+    box-shadow:0 14px 44px rgba(0,0,0,.5);
+    image-rendering:pixelated;
+  }
+  .play-side{display:flex;flex-direction:column;gap:10px;min-width:120px}
+  .frame-ind{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .frame-ind b{color:var(--accent2)}
+
+  .frames-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 16px 4px;font-size:12px;color:var(--muted);
+    font-weight:600;letter-spacing:.5px;
+  }
+  #frameGrid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));
+    gap:12px;padding:12px 16px 16px;
+  }
+  .f-cell{
+    border:1px solid var(--border);border-radius:12px;overflow:hidden;
+    background:#0e1119;position:relative;cursor:pointer;transition:all .18s;
+  }
+  .f-cell:hover{border-color:rgba(124,108,255,.5)}
+  .f-cell.cur{border-color:var(--accent2);box-shadow:0 0 0 1px var(--accent2)}
+  .f-cell .imgbox{aspect-ratio:1;background:#0e1119}
+  .f-cell .imgbox img{width:100%;height:100%;object-fit:contain;display:block}
+  .f-cell .tag{
+    position:absolute;left:6px;top:6px;font-size:10px;color:#fff;
+    background:rgba(0,0,0,.62);border-radius:5px;padding:2px 7px;
+    font-variant-numeric:tabular-nums;
+  }
+  .f-cell .fbar{
+    display:flex;gap:6px;padding:6px 7px;border-top:1px solid var(--border);
+  }
+  .f-cell .fbar button{
+    flex:1;background:#171c29;border:1px solid var(--border);color:#c4cbe0;
+    border-radius:7px;padding:4px 0;font-size:10.5px;cursor:pointer;font-family:inherit;
+    transition:all .15s;
+  }
+  .f-cell .fbar button:hover{color:#fff;border-color:rgba(124,108,255,.55)}
+  .f-cell .fbar button:disabled{opacity:.4;cursor:not-allowed}
+
+  /* loading */
+  .loading-overlay{
+    position:absolute;inset:0;z-index:10;
+    background:rgba(10,12,18,.82);backdrop-filter:blur(6px);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  }
+  .spinner{
+    width:46px;height:46px;border-radius:50%;
+    border:3px solid rgba(124,108,255,.2);border-top-color:var(--accent);
+    animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .loading-text{font-size:14.5px;font-weight:600;color:#e2e6f2}
+  .elapsed{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .loading-bar{width:240px;height:5px;border-radius:3px;background:#1a2030;overflow:hidden}
+  .loading-bar i{display:block;height:100%;width:0;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .3s}
+
+  /* ---------- 通知记录（右侧常驻） ---------- */
+  .notice-tab{
+    position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:95;
+    width:34px;height:64px;border-radius:10px 0 0 10px;
+    background:linear-gradient(180deg,rgba(124,108,255,.92),rgba(34,211,238,.85));
+    border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    box-shadow:-3px 0 14px rgba(124,108,255,.35);transition:width .2s;
+  }
+  .notice-tab:hover{width:40px}
+  .notice-tab svg{width:18px;height:18px}
+  .notice-tab .badge-num{
+    position:absolute;top:-6px;left:-6px;min-width:17px;height:17px;border-radius:9px;
+    background:var(--red);color:#fff;font-size:10px;line-height:17px;text-align:center;
+    padding:0 4px;font-weight:600;box-shadow:0 0 8px rgba(248,113,113,.5);
+  }
+  .notice-panel{
+    position:fixed;right:0;top:64px;bottom:16px;width:300px;z-index:94;
+    background:#141824;border:1px solid var(--border);border-radius:14px 0 0 14px;
+    box-shadow:-14px 0 40px rgba(0,0,0,.45);
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .notice-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 14px;border-bottom:1px solid var(--border);
+    font-size:13px;font-weight:600;
+  }
+  .notice-actions button{
+    background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;
+    font-family:inherit;margin-left:8px;padding:2px 7px;border-radius:6px;
+  }
+  .notice-actions button:hover{color:#fff;background:rgba(255,255,255,.07)}
+  #noticeClose{font-size:15px}
+  .notice-list{flex:1;overflow-y:auto;padding:10px 12px}
+  .notice-item{display:flex;gap:8px;padding:7px 0;border-bottom:1px dashed rgba(255,255,255,.05);font-size:12px;line-height:1.55}
+  .notice-item:last-child{border-bottom:none}
+  .notice-dot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0}
+  .notice-item.success .notice-dot{background:var(--green);box-shadow:0 0 6px var(--green)}
+  .notice-item.error .notice-dot{background:var(--red);box-shadow:0 0 6px var(--red)}
+  .notice-item.info .notice-dot{background:var(--accent2);box-shadow:0 0 6px var(--accent2)}
+  .notice-msg{color:#cfd5e4;word-break:break-word}
+  .notice-item.error .notice-msg{color:#ffd9d9}
+  .notice-time{font-size:10px;color:#5d6478;margin-top:2px}
+  .notice-empty{font-size:12px;color:#5d6478;text-align:center;padding:26px 0}
+
+  #toast{
+    position:fixed;right:22px;bottom:22px;z-index:100;
+    display:flex;flex-direction:column;gap:8px;max-width:360px;
+  }
+  .toast{
+    padding:12px 16px;border-radius:12px;font-size:13px;line-height:1.6;
+    background:#1a1f2e;border:1px solid var(--border);color:var(--text);
+    box-shadow:0 10px 30px rgba(0,0,0,.5);
+    animation:slideIn .3s ease;display:flex;align-items:flex-start;gap:9px;
+  }
+  .toast.success{border-color:rgba(52,211,153,.4)}
+  .toast.error{border-color:rgba(248,113,113,.45);color:#ffd9d9}
+  .toast.info{border-color:rgba(34,211,238,.4)}
+  @keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+
+  /* header 设置按钮与面板 */
+  .head-btn{
+    display:inline-flex;align-items:center;gap:7px;
+    background:rgba(124,108,255,.12);border:1px solid rgba(124,108,255,.35);
+    color:#d6d9f5;border-radius:10px;padding:7px 13px;font-size:12.5px;
+    cursor:pointer;font-family:inherit;transition:all .18s;
+  }
+  .head-btn:hover{background:rgba(124,108,255,.24);color:#fff}
+  .head-btn svg{width:15px;height:15px}
+  .settings-panel{
+    position:absolute;top:calc(100% + 8px);right:0;z-index:60;
+    width:min(400px,calc(100vw - 24px));
+    background:#141824;border:1px solid var(--border);border-radius:14px;
+    box-shadow:0 20px 60px rgba(0,0,0,.55);
+    padding:16px;max-height:calc(100vh - 96px);overflow-y:auto;
+  }
+  .settings-panel:not([hidden]){animation:slideDown .22s ease}
+  @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+  .sp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .sp-head span{font-size:14px;font-weight:600}
+  .sp-close{background:none;border:none;color:var(--muted);font-size:18px;line-height:1;cursor:pointer;width:26px;height:26px;border-radius:8px;font-family:inherit}
+  .sp-close:hover{color:#fff;background:rgba(255,255,255,.06)}
+  .sp-section{padding-top:12px;margin-top:12px;border-top:1px solid var(--border)}
+  .sp-label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px}
+  .usage-text{font-size:12.5px;color:var(--muted);line-height:1.9}
+
+  /* ---------- 动画历史 ---------- */
+  .history-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .history-head h3{font-size:15px;font-weight:600}
+  #clearAnimHistory{font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit}
+  #clearAnimHistory:hover{color:var(--red)}
+  #animHistoryGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px}
+  .h-card{border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--card);cursor:pointer;transition:all .2s;position:relative}
+  .h-card:hover{border-color:rgba(124,108,255,.5);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  .h-card .imgbox{aspect-ratio:1;background:#0e1119;overflow:hidden;position:relative}
+  .h-card .imgbox img{width:100%;height:100%;object-fit:cover;display:block}
+  .h-card .imgbox .play-ico{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);opacity:0;transition:opacity .2s}
+  .h-card:hover .imgbox .play-ico{opacity:1}
+  .h-num{position:absolute;left:6px;bottom:6px;font-size:10px;color:#fff;background:rgba(0,0,0,.62);border-radius:5px;padding:2px 7px}
+  .h-card .meta{padding:9px 11px}
+  .h-card .p{font-size:11.5px;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:32px}
+  .h-card .sub{font-size:10.5px;color:#5d6478;margin-top:5px;display:flex;justify-content:space-between}
+  .h-card .del{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;border:none;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;z-index:2}
+  .h-card:hover .del{opacity:1}
+  .h-card .del:hover{background:var(--red)}
+  .history-empty{font-size:12.5px;color:#5d6478;text-align:center;padding:26px 0}
+
+  @media (max-width:1120px){
+    main{grid-template-columns:1fr}
+    aside{position:static;max-height:none;overflow:visible}
+    .result-box{min-height:400px}
+  }
+  @media (max-width:640px){
+    header{padding:12px 14px}
+    main{padding:14px 12px 40px}
+    .logo small{display:none}
+    .badge{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="13" rx="2"/>
+        <path d="M8 21h8M12 17v4"/>
+        <path d="m8.5 8.5 2 1.5 2.5-3 3 4H7z"/>
+      </svg>
+    </div>
+    Agnes Studio <small>帧动画工坊</small>
+  </div>
+  <div class="header-right">
+    <button class="head-btn" id="settingsBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      设置与说明
+    </button>
+    <div class="settings-panel" id="settingsPanel" hidden>
+      <div class="sp-head">
+        <span>设置与说明</span>
+        <button class="sp-close" id="settingsClose" title="关闭">×</button>
+      </div>
+      <div class="sp-section">
+        <div class="sp-label">API Key</div>
+        <div class="key-wrap">
+          <input id="apiKey" type="password" placeholder="sk- 粘贴你的 Agnes API Key" autocomplete="off" spellcheck="false"/>
+          <button class="eye-btn" id="toggleKey" title="显示 / 隐藏">
+            <svg id="eyeOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg id="eyeOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+        <p class="hint">与生图工坊共用同一个 Key，自动同步；仅保存在当前浏览器本地。</p>
+      </div>
+      <div class="sp-section">
+        <div class="sp-label">使用说明</div>
+        <div class="usage-text">
+          ① 填角色设定 + 动作，点「开始生成动画」——文本模型先拆解逐帧姿态脚本（JSON 可查看）<br/>
+          ② 第 1 帧由文字直接生成，后续帧以参考图做图生图，保持角色与背景一致<br/>
+          ③ 不理想的单帧可点「重绘」单独重来，不影响其他帧<br/>
+          ④ 播放预览满意后，导出 GIF（循环播放）或雪碧图（可直接用于游戏引擎）——导出会弹出系统保存窗口，直接选位置保存，不会触发 Windows 拦截<br/>
+          ⑤ 生成成功后自动存入「动画历史」，可随时点开回顾、再次导出或删除<br/>
+          <span style="color:#6b7284">提示：导出 GIF/雪碧图/单帧需要读取跨域图片，若报「跨域获取图片失败」，请先在项目目录运行 <code style="background:#0e1119;padding:1px 6px;border-radius:5px;color:#8fd8e8">python agnes-proxy.py</code>（本地代理，保持窗口运行），再刷新页面重试；页面也会自动尝试公共代理。纯白/纯绿背景便于抠像。</span>
+        </div>
+      </div>
+    </div>
+    <span class="badge"><span class="dot"></span>当前 $0 · 免费生成</span>
+    <a class="docs-link" href="pic-diy.html">生图工坊 →</a>
+    <a class="docs-link" href="https://wiki.agnes-ai.com" target="_blank" rel="noreferrer">API 文档 ↗</a>
+  </div>
+</header>
+
+<main>
+  <!-- ======== 左侧配置面板 ======== -->
+  <aside>
+    <!-- 模型 -->
+    <section class="card">
+      <div class="label">模型</div>
+      <div class="seg" id="modelSeg">
+        <button data-model="agnes-image-2.1-flash" class="active">2.1 Flash<small>构图保留 · 档位尺寸</small></button>
+        <button data-model="agnes-image-2.0-flash">2.0 Flash<small>经典 · 精确尺寸</small></button>
+      </div>
+    </section>
+    
+    <!-- 角色设定 -->
+    <section class="card">
+      <div class="label">角色设定</div>
+      <textarea id="charDesc" rows="3" placeholder="描述角色外观，例如：Q 版像素风黄色小猫战士，白色爪子，橙色围巾，2D 横版游戏角色"></textarea>
+    </section>
+
+    <!-- 动作 -->
+    <section class="card">
+      <div class="label">动作描述</div>
+      <textarea id="actionDesc" rows="2" placeholder="例如：挥剑上挑斩击（从蓄力到收招的完整过程）"></textarea>
+    </section>
+
+
+    <!-- 输出尺寸 -->
+    <section class="card">
+      <div class="label">输出尺寸</div>
+      <div id="sizeControl21">
+        <div class="seg" id="tierSeg">
+          <button data-tier="1K" class="active">1K<small>1024</small></button>
+          <button data-tier="2K">2K<small>2048</small></button>
+          <button data-tier="3K">3K<small>3072</small></button>
+          <button data-tier="4K">4K<small>4096</small></button>
+        </div>
+        <div style="height:10px"></div>
+        <div class="seg ratio" id="ratioSeg">
+          <button data-ratio="1:1" class="active">1:1</button>
+          <button data-ratio="3:4">3:4</button>
+          <button data-ratio="4:3">4:3</button>
+          <button data-ratio="16:9">16:9</button>
+          <button data-ratio="9:16">9:16</button>
+          <button data-ratio="2:3">2:3</button>
+          <button data-ratio="3:2">3:2</button>
+          <button data-ratio="21:9">21:9</button>
+        </div>
+        <div class="size-meta" id="computedSize">输出 <b>1024×1024</b> px</div>
+      </div>
+      <div id="sizeControl2" style="display:none">
+        <div class="seg" id="size2Seg">
+          <button data-size="1024x1024" class="active">1024×1024<small>方形</small></button>
+          <button data-size="1024x768">1024×768<small>横向</small></button>
+          <button data-size="768x1024">768×1024<small>纵向</small></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 参数 -->
+    <section class="card">
+      <div class="label">动画参数</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px">帧数</div>
+      <div class="seg" id="frameCountSeg">
+        <button data-n="4">4 帧</button>
+        <button data-n="6" class="active">6 帧</button>
+        <button data-n="8">8 帧</button>
+        <button data-n="12">12 帧</button>
+      </div>
+      <div class="fps-row">
+        <span style="font-size:12px;color:var(--muted);white-space:nowrap">FPS</span>
+        <input type="range" id="fpsInput" min="4" max="24" step="1" value="12"/>
+        <span class="fps-val" id="fpsVal">12</span>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin:12px 0 8px">背景（便于抠像合成）</div>
+      <div class="seg" id="bgSeg">
+        <button data-bg="white" class="active">纯白</button>
+        <button data-bg="green">纯绿幕</button>
+        <button data-bg="scene">简单场景</button>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin:12px 0 8px">帧间一致性策略</div>
+      <div class="seg" id="chainSeg">
+        <button data-chain="anchor" class="active">锚定首帧<small>角色更稳定</small></button>
+        <button data-chain="chain">逐帧接力<small>动作更连贯</small></button>
+      </div>
+    </section>
+
+    <button class="btn-primary" id="generate">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      <span id="genText">开始生成动画</span>
+    </button>
+
+    <details>
+      <summary>逐帧姿态脚本（JSON）</summary>
+      <pre id="scriptJson">尚未生成，点击「开始生成动画」后自动生成逐帧姿态脚本。</pre>
+    </details>
+  </aside>
+
+  <!-- ======== 右侧结果区 ======== -->
+  <div class="result-col">
+    <div class="result-box" id="resultBox">
+      <div id="resultEmpty">
+        <div class="orb"></div>
+        <div class="t1">Agnes 帧动画生成器</div>
+        <div class="t2">输入角色设定与动作描述，自动拆解为逐帧姿态并生成动画帧，可预览播放并导出 GIF / 雪碧图。提示：先由文本模型编写脚本，再逐帧生成，最后合成动画。</div>
+      </div>
+
+      <div id="resultWrap" hidden>
+        <div class="result-toolbar">
+          <div class="meta-chips">
+            <span class="mchip" id="metaFrames"></span>
+            <span class="mchip" id="metaModel"></span>
+            <span class="mchip" id="metaSize"></span>
+            <span class="mchip" id="metaFps"></span>
+            <span class="mchip" id="metaChain"></span>
+          </div>
+          <div class="tool-group">
+            <button class="tool-btn" id="btnPlay">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/></svg>
+              <span>播放</span>
+            </button>
+            <button class="tool-btn" id="btnGif">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10v4M10 10v4M10 12h3M16 10v4M15 10v2a2 2 0 0 0 4 0v-1"/></svg>
+              <span>导出 GIF</span>
+            </button>
+            <button class="tool-btn" id="btnSprite">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h18M12 3v18"/></svg>
+              <span>导出雪碧图</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="play-area">
+          <canvas id="animCanvas" width="512" height="512"></canvas>
+          <div class="play-side">
+            <div class="frame-ind">帧 <b id="curFrame">1</b> / <span id="totalFrames">0</span></div>
+            <div class="frame-ind">FPS <b id="playFps">12</b></div>
+            <div class="frame-ind" style="font-size:11px;color:#5d6478">导出尺寸</div>
+            <div class="seg ratio" id="exportSizeSeg">
+              <button data-s="256">256</button>
+              <button data-s="512" class="active">512</button>
+              <button data-s="1024">1024</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="frames-head">
+          <span>动画帧序列</span>
+          <span>点击帧可跳转预览 · 单帧可下载或重绘</span>
+        </div>
+        <div id="frameGrid"></div>
+      </div>
+
+      <div class="loading-overlay" id="loadingOverlay" hidden>
+        <div class="spinner"></div>
+        <div class="loading-text" id="loadingText">正在生成…</div>
+        <div class="loading-bar"><i id="loadingBar"></i></div>
+        <div class="elapsed" id="elapsed">0s</div>
+      </div>
+    </div>
+
+    <!-- 动画历史 -->
+    <section class="anim-history">
+      <div class="history-head">
+        <h3>动画历史</h3>
+        <button id="clearAnimHistory">清空</button>
+      </div>
+      <div id="animHistoryGrid">
+        <div class="history-empty" id="animHistoryEmpty">暂无记录，生成的动画会自动保存在这里（本机缓存）</div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<div id="toast"></div>
+
+<!-- 通知记录（右侧常驻） -->
+<div class="notice-dock">
+  <button class="notice-tab" id="noticeTab" title="通知记录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    <span class="badge-num" id="noticeBadge" hidden>0</span>
+  </button>
+</div>
+<div class="notice-panel" id="noticePanel" hidden>
+  <div class="notice-head">
+    <span>通知记录</span>
+    <span class="notice-actions">
+      <button id="noticeClear" title="清空">清空</button>
+      <button id="noticeClose" title="关闭">×</button>
+    </span>
+  </div>
+  <div class="notice-list" id="noticeList"></div>
+</div>
+
+<script>
+'use strict';
+/* ================= 常量 ================= */
+const IMG_ENDPOINT = 'https://apihub.agnes-ai.com/v1/images/generations';
+const TEXT_ENDPOINT = 'https://apihub.agnes-ai.com/v1/chat/completions';
+const MODEL_21 = 'agnes-image-2.1-flash';
+const MODEL_20 = 'agnes-image-2.0-flash';
+const TEXT_MODEL = 'agnes-2.5-flash';
+const LS_SETTINGS = 'agnes_anim_settings_v1';
+const FRAME_TIMEOUT = 240000;
+
+const SIZE_TABLE = {
+  '1:1':  {'1K':'1024×1024','2K':'2048×2048','3K':'3072×3072','4K':'4096×4096'},
+  '3:4':  {'1K':'864×1152','2K':'1728×2304','3K':'2592×3456','4K':'3456×4608'},
+  '4:3':  {'1K':'1152×864','2K':'2304×1728','3K':'3456×2592','4K':'4608×3456'},
+  '16:9': {'1K':'1312×736','2K':'2624×1472','3K':'3936×2208','4K':'5248×2944'},
+  '9:16': {'1K':'736×1312','2K':'1472×2624','3K':'2208×3936','4K':'2944×5248'},
+  '2:3':  {'1K':'832×1248','2K':'1664×2496','3K':'2496×3744','4K':'3328×4992'},
+  '3:2':  {'1K':'1248×832','2K':'2496×1664','3K':'3744×2496','4K':'4992×3328'},
+  '21:9': {'1K':'1568×672','2K':'3136×1344','3K':'4704×2016','4K':'6272×2688'},
+};
+
+const BG_MAP = {
+  white: 'plain pure white background (#FFFFFF)',
+  green: 'plain solid green chroma-key background (#00FF00)',
+  scene: 'simple minimal flat background, no other characters or objects',
+};
+const STYLE_SUFFIX = '2D game sprite, front view, full body, centered, crisp outlines, consistent lighting';
+
+/* ================= 状态 ================= */
+const state = {
+  model: MODEL_21,
+  tier: '1K',
+  ratio: '1:1',
+  size2: '1024x1024',
+  frameCount: 6,
+  fps: 12,
+  bg: 'white',
+  chain: 'anchor',
+  exportSize: 512,
+  frames: [],        // [{src, prompt}]
+  script: [],        // [{frame, pose}]
+};
+let frameImgs = [];  // HTMLImageElement[]
+let playing = false, playTimer = null, curIdx = 0;
+
+/* ================= DOM ================= */
+const $ = id => document.getElementById(id);
+const apiKeyEl = $('apiKey'), toggleKey = $('toggleKey'), eyeOpen = $('eyeOpen'), eyeOff = $('eyeOff');
+const charDescEl = $('charDesc'), actionDescEl = $('actionDesc');
+const frameCountSeg = $('frameCountSeg'), bgSeg = $('bgSeg'), chainSeg = $('chainSeg');
+const fpsInput = $('fpsInput'), fpsVal = $('fpsVal');
+const generateBtn = $('generate'), genText = $('genText');
+const scriptJson = $('scriptJson');
+const resultBox = $('resultBox'), resultEmpty = $('resultEmpty'), resultWrap = $('resultWrap');
+const loadingOverlay = $('loadingOverlay'), loadingText = $('loadingText'), loadingBar = $('loadingBar'), elapsedEl = $('elapsed');
+const metaFrames = $('metaFrames'), metaModel = $('metaModel'), metaSize = $('metaSize');
+const metaFps = $('metaFps'), metaChain = $('metaChain');
+const modelSeg = $('modelSeg'), tierSeg = $('tierSeg'), ratioSeg = $('ratioSeg'), size2Seg = $('size2Seg');
+const computedSize = $('computedSize');
+const animCanvas = $('animCanvas'), curFrameEl = $('curFrame'), totalFramesEl = $('totalFrames'), playFps = $('playFps');
+const btnPlay = $('btnPlay'), btnGif = $('btnGif'), btnSprite = $('btnSprite');
+const frameGrid = $('frameGrid'), exportSizeSeg = $('exportSizeSeg');
+const animHistoryGrid = $('animHistoryGrid'), clearAnimHistory = $('clearAnimHistory');
+const settingsBtn = $('settingsBtn'), settingsPanel = $('settingsPanel'), settingsClose = $('settingsClose');
+const animCtx = animCanvas.getContext('2d');
+
+/* ================= 工具函数 ================= */
+function toast(msg, type = 'info') {
+  addNotice(msg, type);   // 同步进右侧通知记录，避免一闪而过
+  const box = $('toast');
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = msg;
+  box.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .4s'; }, 3400);
+  setTimeout(() => el.remove(), 3900);
+}
+
+/* ================= 通知记录（常驻右侧） ================= */
+const LS_NOTICES = 'agnes_notices_anim_v1';
+const noticeTab = $('noticeTab'), noticePanel = $('noticePanel'), noticeList = $('noticeList');
+const noticeBadge = $('noticeBadge'), noticeClear = $('noticeClear'), noticeClose = $('noticeClose');
+let notices = [];
+let lastSeen = 0;
+function loadNotices() {
+  try { notices = JSON.parse(localStorage.getItem(LS_NOTICES) || '[]'); } catch (e) { notices = []; }
+  if (!Array.isArray(notices)) notices = [];
+  lastSeen = notices.length;
+}
+function saveNotices() {
+  try { localStorage.setItem(LS_NOTICES, JSON.stringify(notices.slice(-50))); } catch (e) {}
+}
+function addNotice(msg, type = 'info') {
+  notices.push({ msg: String(msg), type, ts: Date.now() });
+  if (notices.length > 50) notices = notices.slice(-50);
+  saveNotices();
+  renderNotices(true);
+  if (!noticePanel.hidden) lastSeen = notices.length;
+  updateNoticeBadge();
+}
+function fmtTime(ts) {
+  const d = new Date(ts);
+  const p = n => String(n).padStart(2, '0');
+  return p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+}
+function renderNotices(autoScroll) {
+  noticeList.innerHTML = '';
+  if (!notices.length) {
+    const e = document.createElement('div');
+    e.className = 'notice-empty';
+    e.textContent = '暂无通知';
+    noticeList.appendChild(e);
+    return;
+  }
+  const list = notices.slice().reverse();   // 最新消息在最上面
+  list.forEach(n => {
+    const item = document.createElement('div');
+    item.className = 'notice-item ' + (n.type || 'info');
+    const dot = document.createElement('span');
+    dot.className = 'notice-dot';
+    const body = document.createElement('div');
+    body.className = 'notice-body';
+    const msg = document.createElement('div');
+    msg.className = 'notice-msg';
+    msg.textContent = n.msg;
+    const tm = document.createElement('div');
+    tm.className = 'notice-time';
+    tm.textContent = fmtTime(n.ts);
+    body.appendChild(msg); body.appendChild(tm);
+    item.appendChild(dot); item.appendChild(body);
+    noticeList.appendChild(item);
+  });
+  if (autoScroll) noticeList.scrollTop = 0;
+}
+function updateNoticeBadge() {
+  const unread = Math.max(0, notices.length - lastSeen);
+  noticeBadge.hidden = unread <= 0;
+  noticeBadge.textContent = unread > 99 ? '99+' : unread;
+}
+noticeTab.onclick = () => {
+  noticePanel.hidden = !noticePanel.hidden;
+  if (!noticePanel.hidden) { lastSeen = notices.length; renderNotices(false); }
+  updateNoticeBadge();
+};
+noticeClose.onclick = () => { noticePanel.hidden = true; };
+noticeClear.onclick = () => { notices = []; lastSeen = 0; saveNotices(); renderNotices(false); updateNoticeBadge(); };
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s == null ? '' : String(s);
+  return d.innerHTML;
+}
+function relTime(ts) {
+  const d = (Date.now() - ts) / 1000;
+  if (d < 60) return '刚刚';
+  if (d < 3600) return Math.floor(d / 60) + ' 分钟前';
+  if (d < 86400) return Math.floor(d / 3600) + ' 小时前';
+  return Math.floor(d / 86400) + ' 天前';
+}
+function dataUri(b64) {
+  const cleaned = String(b64).trim().replace(/^data:image\/\w+;base64,/i, '');
+  let mime = 'image/png';
+  if (/^\/9j/.test(cleaned)) mime = 'image/jpeg';
+  else if (/^R0lGOD/.test(cleaned)) mime = 'image/gif';
+  else if (/^UklGR/.test(cleaned)) mime = 'image/webp';
+  return `data:${mime};base64,${cleaned}`;
+}
+function saveSettings() {
+  try {
+    localStorage.setItem(LS_SETTINGS, JSON.stringify({
+      model: state.model, tier: state.tier, ratio: state.ratio, size2: state.size2,
+      frameCount: state.frameCount, fps: state.fps, bg: state.bg, chain: state.chain,
+      exportSize: state.exportSize, charDesc: charDescEl.value, actionDesc: actionDescEl.value,
+    }));
+  } catch (e) {}
+}
+function loadSettings() {
+  try {
+    const s = JSON.parse(localStorage.getItem(LS_SETTINGS) || '{}');
+    if (s.model) state.model = s.model;
+    if (s.tier) state.tier = s.tier;
+    if (s.ratio) state.ratio = s.ratio;
+    if (s.size2) state.size2 = s.size2;
+    if (s.frameCount) state.frameCount = s.frameCount;
+    if (s.fps) state.fps = s.fps;
+    if (s.bg) state.bg = s.bg;
+    if (s.chain) state.chain = s.chain;
+    if (s.exportSize) state.exportSize = s.exportSize;
+    if (s.charDesc) charDescEl.value = s.charDesc;
+    if (s.actionDesc) actionDescEl.value = s.actionDesc;
+  } catch (e) {}
+  apiKeyEl.value = localStorage.getItem('agnes_api_key') || '';
+}
+function saveKey() {
+  try { localStorage.setItem('agnes_api_key', apiKeyEl.value.trim()); } catch (e) {}
+}
+function setSeg(container, dsKey, value) {
+  container.querySelectorAll('button').forEach(btn => {
+    btn.classList.toggle('active', String(btn.dataset[dsKey]) === String(value));
+  });
+}
+
+/* ================= 提示词构建 ================= */
+function framePrompt(charDesc, pose, isFirst) {
+  const bg = BG_MAP[state.bg] || BG_MAP.white;
+  const keep = isFirst
+    ? ''
+    : 'Keep the exact same character design, colors, outfit, proportions, pose style and background as the reference image. Only change the body pose to match the action description. ';
+  return `${charDesc}, ${pose}, ${bg}, ${STYLE_SUFFIX}. ${keep}`.trim();
+}
+
+/* ================= 文本模型：逐帧脚本 ================= */
+function parseJsonArray(text) {
+  if (!text) return null;
+  let t = String(text).trim();
+  t = t.replace(/```json/gi, '').replace(/```/g, '').trim();
+  const a = t.indexOf('['), b = t.lastIndexOf(']');
+  if (a < 0 || b <= a) return null;
+  try {
+    const arr = JSON.parse(t.slice(a, b + 1));
+    return Array.isArray(arr) ? arr : null;
+  } catch (e) { return null; }
+}
+async function generateScript(charDesc, action, n) {
+  const key = apiKeyEl.value.trim();
+  if (!key) return null;
+  const sys = '你是专业的 2D 游戏动画师。用户会给出角色设定、动作和帧数，你需要把它拆解成逐帧姿态脚本。要求：\n'
+    + '1) 遵循动画规律：准备/蓄力 → 发力 → 动作顶点 → 惯性收势 → 恢复待机；\n'
+    + '2) 每帧只描述角色姿态与肢体位置变化，如果用户的描述有朝向，那么朝向要固定，用英文，不要包含背景、风格、角色外观描述；\n'
+    + '3) 只输出一个 JSON 数组，不要输出任何其他文字或代码块标记。';
+  const user = `角色：${charDesc}\n动作：${action}\n帧数：${n}\n\n请输出如下格式的 JSON 数组（严格 ${n} 项）：\n[{"frame":1,"pose":"英文姿态描述"}, ...]`;
+  try {
+    const res = await fetch(TEXT_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      body: JSON.stringify({ model: TEXT_MODEL, messages: [
+        { role: 'system', content: sys },
+        { role: 'user', content: user },
+      ], temperature: 0.4, max_tokens: 2000 }),
+    });
+    if (!res.ok) return null;
+    const j = await res.json();
+    const text = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+    const arr = parseJsonArray(text);
+    if (!arr || arr.length !== n) return null;
+    const poses = arr.map(x => String(x.pose || '').trim()).filter(Boolean);
+    return poses.length === n ? poses : null;
+  } catch (e) { return null; }
+}
+function fallbackScript(action, n) {
+  const phases = [
+    'anticipation, body slightly crouched, gathering power',
+    'starting the motion, about 30% through the action',
+    'peak of the action at about 50%, maximum force',
+    'follow through, about 70% through the action',
+    'recovering, about 90% through the action, slowing down',
+    'returning to idle stance',
+  ];
+  return Array.from({ length: n }, (_, i) => {
+    const t = n === 1 ? 0 : i / (n - 1);
+    const idx = Math.min(5, Math.floor(t * 6));
+    return `action: ${action}; ${phases[idx]}`;
+  });
+}
+
+/* ================= 图像 API ================= */
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/* 图像 API 请求：内置 503/429/超时自动重试（服务端队列繁忙时等一会再试） */
+async function requestImage(payload, onRetry) {
+  const key = apiKeyEl.value.trim();
+  if (!key) throw new Error('请先填写 API Key');
+  const maxAttempts = 4;
+  for (let attempt = 1; ; attempt++) {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), FRAME_TIMEOUT);
+    try {
+      const res = await fetch(IMG_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+        body: JSON.stringify(payload),
+        signal: ctrl.signal,
+      });
+      if (res.status === 503 || res.status === 429) {
+        if (attempt < maxAttempts) {
+          const wait = Math.min(30000, 2500 * attempt);
+          if (onRetry) onRetry(attempt, wait);
+          await sleep(wait);
+          continue;
+        }
+        throw new Error('图像服务繁忙（队列满），已自动重试 3 次仍失败，请稍后再试');
+      }
+      if (!res.ok) {
+        let msg = 'HTTP ' + res.status;
+        try { const j = await res.json(); console.log('[Agnes 图像 API 错误]', j); msg = (j && (j.error?.message || j.message || j.detail)) || msg; } catch (e) {}
+        if ((res.status >= 500 || /queue is full|overloaded|busy/i.test(msg)) && attempt < maxAttempts) {
+          const wait = Math.min(30000, 2500 * attempt);
+          if (onRetry) onRetry(attempt, wait);
+          await sleep(wait);
+          continue;
+        }
+        throw new Error(msg);
+      }
+      const j = await res.json();
+      console.log('[Agnes 图像 API 返回]', j);
+      const item = j.data && j.data[0];
+      const url = item && typeof item.url === 'string' ? item.url : null;
+      const b64 = item && typeof item.b64_json === 'string' ? item.b64_json : null;
+      if (!item || (!url && !b64)) {
+        throw new Error('API 未返回可用图片（已打印到控制台，按 F12 查看）');
+      }
+      return b64 ? dataUri(b64) : url;
+    } catch (e) {
+      if (e.name === 'AbortError') {
+        if (attempt < maxAttempts) {
+          const wait = 2000 * attempt;
+          if (onRetry) onRetry(attempt, wait);
+          await sleep(wait);
+          continue;
+        }
+        throw new Error('单次请求超时（超过 ' + Math.round(FRAME_TIMEOUT / 1000) + ' 秒），已重试多次仍失败');
+      }
+      throw e;
+    } finally {
+      clearTimeout(t);
+    }
+  }
+}
+function buildSizeParams() {
+  if (state.model === MODEL_21) return { size: state.tier, ratio: state.ratio };
+  return { size: state.size2 };
+}
+function genFirstFrame(prompt, onRetry) {
+  // 文生图 Base64：按文档使用顶层 return_base64
+  return requestImage({ model: state.model, prompt, ...buildSizeParams(), return_base64: true }, onRetry);
+}
+function genNextFrame(prompt, refDataURI, onRetry) {
+  // 图生图 Base64：图片与 response_format 放在 extra_body 内
+  return requestImage({
+    model: state.model, prompt, ...buildSizeParams(),
+    extra_body: { image: [refDataURI], response_format: 'b64_json' },
+  }, onRetry);
+}
+
+/* ================= 批量生成 ================= */
+let batchTimer = null, batchStart = 0;
+function setLoading(on) {
+  generateBtn.disabled = on;
+  genText.textContent = on ? '生成中…' : '开始生成动画';
+  loadingOverlay.hidden = !on;
+  if (on) {
+    batchStart = Date.now(); elapsedEl.textContent = '0s';
+    batchTimer = setInterval(() => elapsedEl.textContent = Math.floor((Date.now() - batchStart) / 1000) + 's', 1000);
+  } else {
+    clearInterval(batchTimer); batchTimer = null;
+  }
+}
+function setProgress(done, total) {
+  const pct = total ? Math.round(done / total * 100) : 0;
+  loadingText.textContent = `正在生成第 ${done} / ${total} 帧…`;
+  loadingBar.style.width = pct + '%';
+}
+
+async function runAnimation() {
+  if (generateBtn.disabled) return;
+  const charDesc = charDescEl.value.trim();
+  const action = actionDescEl.value.trim();
+  if (!charDesc) { toast('请先填写角色设定', 'error'); charDescEl.focus(); return; }
+  if (!action) { toast('请先填写动作描述', 'error'); actionDescEl.focus(); return; }
+  const key = apiKeyEl.value.trim();
+  if (!key) { toast('请先填写 Agnes API Key', 'error'); apiKeyEl.focus(); return; }
+  saveKey();
+
+  const n = state.frameCount;
+  stopPlay();
+  setLoading(true);
+  try {
+    // 1) 文本模型写脚本（失败则用内置兜底脚本）
+    loadingText.textContent = '正在编写逐帧姿态脚本…';
+    loadingBar.style.width = '5%';
+    let poses = await generateScript(charDesc, action, n);
+    let scriptNote = '';
+    if (!poses) {
+      poses = fallbackScript(action, n);
+      scriptNote = '（文本模型不可用，已使用内置兜底脚本）';
+      if (!key) scriptNote = '（未填 Key，已使用内置兜底脚本）';
+    }
+    state.script = poses.map((p, i) => ({ frame: i + 1, pose: p }));
+    scriptJson.textContent = JSON.stringify(state.script, null, 2) + scriptNote;
+
+    // 2) 逐帧生成（服务端队列繁忙时自动重试，并显示进度）
+    state.frames = [];
+    for (let i = 0; i < n; i++) {
+      setProgress(i + 1, n);
+      const prompt = framePrompt(charDesc, poses[i], i === 0);
+      const onRetry = (attempt, wait) => {
+        loadingText.textContent = `第 ${i + 1} / ${n} 帧排队中（服务繁忙），${Math.round(wait / 1000)} 秒后自动重试 ${attempt}/3…`;
+      };
+      let src;
+      if (i === 0) {
+        src = await genFirstFrame(prompt, onRetry);
+      } else {
+        const ref = state.chain === 'chain' ? state.frames[i - 1].src : state.frames[0].src;
+        src = await genNextFrame(prompt, ref, onRetry);
+      }
+      state.frames.push({ src, prompt });
+    }
+    await presentResult();
+    const saved = await addAnimHistory();
+    if (saved === 'slim') toast('历史已保存（本地空间不足，仅缩略图预览）', 'info');
+    else if (saved === false) toast('本地存储不可用，本次动画仅保留在会话中', 'info');
+    toast(`动画生成完成，共 ${n} 帧，已自动存入历史（全分辨率）`, 'success');
+  } catch (e) {
+    if (state.frames.length) {
+      await presentResult();
+      toast('部分帧生成失败：' + e.message + '（已保留成功帧）', 'error');
+    } else {
+      toast('生成失败：' + e.message, 'error');
+    }
+  } finally {
+    setLoading(false);
+  }
+}
+generateBtn.onclick = runAnimation;
+
+/* ================= 结果展示与播放 ================= */
+async function presentResult() {
+  resultEmpty.hidden = true;
+  resultWrap.hidden = false;
+  metaFrames.textContent = state.frames.length + ' 帧';
+  metaModel.textContent = state.model === MODEL_21 ? '2.1 Flash' : '2.0 Flash';
+  metaSize.textContent = state.model === MODEL_21 ? (state.tier + ' · ' + state.ratio) : state.size2;
+  metaFps.textContent = state.fps + ' FPS';
+  metaChain.textContent = state.chain === 'chain' ? '逐帧接力' : '锚定首帧';
+  totalFramesEl.textContent = state.frames.length;
+  playFps.textContent = state.fps;
+
+  // 预加载图片（对失败帧容错，不再让单帧失败拖垮整体）
+  frameImgs = await Promise.all(state.frames.map(f => new Promise(res => {
+    const im = new Image();
+    im.onload = () => res(im);
+    im.onerror = () => res(null);
+    im.src = f.src;
+  })));
+  // 画布按首帧尺寸
+  const im0 = frameImgs.find(Boolean);
+  if (!im0) {
+    toast('所有帧图片均无法加载，请检查 API Key 与控制台日志，或重试', 'error');
+    return;
+  }
+  animCanvas.width = im0.naturalWidth || 512;
+  animCanvas.height = im0.naturalHeight || 512;
+  renderGrid();
+  jumpTo(0);
+}
+function renderGrid() {
+  frameGrid.innerHTML = '';
+  state.frames.forEach((f, i) => {
+    const cell = document.createElement('div');
+    cell.className = 'f-cell' + (i === curIdx ? ' cur' : '');
+    cell.innerHTML = `
+      <div class="imgbox"><img src="${f.src}" alt=""></div>
+      <div class="tag">第 ${i + 1} 帧</div>
+      <div class="fbar">
+        <button data-act="dl" title="下载此帧">下载</button>
+        <button data-act="redo" title="重新生成此帧">重绘</button>
+      </div>`;
+    cell.onclick = () => jumpTo(i);
+    cell.querySelector('[data-act="dl"]').onclick = (e) => {
+      e.stopPropagation();
+      downloadFrame(i);
+    };
+    cell.querySelector('[data-act="redo"]').onclick = (e) => {
+      e.stopPropagation();
+      redrawFrame(i);
+    };
+    frameGrid.appendChild(cell);
+  });
+}
+function drawFrame(i) {
+  const im = frameImgs[i];
+  if (!im) return;
+  animCtx.clearRect(0, 0, animCanvas.width, animCanvas.height);
+  animCtx.drawImage(im, 0, 0, animCanvas.width, animCanvas.height);
+  curIdx = i;
+  curFrameEl.textContent = i + 1;
+  frameGrid.querySelectorAll('.f-cell').forEach((c, ci) => c.classList.toggle('cur', ci === i));
+}
+function jumpTo(i) {
+  if (!frameImgs.length) return;
+  stopPlay();
+  drawFrame(i);
+  btnPlay.querySelector('span').textContent = '播放';
+}
+function togglePlay() {
+  if (!frameImgs.length) return;
+  if (playing) { stopPlay(); return; }
+  playing = true;
+  btnPlay.querySelector('span').textContent = '暂停';
+  const step = () => {
+    drawFrame((curIdx + 1) % frameImgs.length);
+    if (!playing) return;
+    playTimer = setTimeout(step, 1000 / state.fps);
+  };
+  playTimer = setTimeout(step, 1000 / state.fps);
+}
+function stopPlay() {
+  playing = false;
+  clearTimeout(playTimer); playTimer = null;
+  btnPlay.querySelector('span').textContent = '播放';
+}
+btnPlay.onclick = togglePlay;
+
+/* ================= 单帧重绘 ================= */
+async function redrawFrame(i) {
+  if (!state.frames.length || i >= state.frames.length) return;
+  const n = state.frames.length;
+  const charDesc = charDescEl.value.trim() || 'same character as previous frames';
+  const poses = state.script.map(s => s.pose);
+  const prompt = framePrompt(charDesc, poses[i] || `frame ${i + 1}`, i === 0);
+  const ref = i === 0 ? null : (state.chain === 'chain' ? state.frames[i - 1].src : state.frames[0].src);
+  const oldSrc = state.frames[i].src;
+  // 覆盖动画帧
+  stopPlay();
+  const btn = frameGrid.querySelectorAll('.f-cell .fbar [data-act="redo"]')[i];
+  if (btn) { btn.disabled = true; btn.textContent = '重绘中…'; }
+  try {
+    const src = ref ? await genNextFrame(prompt, ref) : await genFirstFrame(prompt);
+    state.frames[i] = { src, prompt };
+    // 更新对应图片
+    const im = new Image();
+    await new Promise((res, rej) => { im.onload = res; im.onerror = rej; im.src = src; });
+    frameImgs[i] = im;
+    renderGrid();
+    drawFrame(i);
+    toast('第 ' + (i + 1) + ' 帧已重绘', 'success');
+  } catch (e) {
+    toast('重绘失败：' + e.message, 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '重绘'; }
+  }
+}
+
+/* ================= 导出 ================= */
+async function downloadFrame(i) {
+  const f = state.frames[i];
+  if (!f) return;
+  let saveCtx = null;
+  try {
+    saveCtx = await beginSave('frame-' + (i + 1) + '.png', { 'image/png': ['.png'] });
+    if (saveCtx === 'cancelled') return;
+    let blob;
+    if (/^https?:/i.test(f.src)) {
+      blob = await fetchImageBlob(f.src);   // 跨域 URL：本地代理/CORS 代理兜底
+    } else {
+      blob = await (await fetch(f.src)).blob();  // data URI 直接转 Blob
+    }
+    const how = await commitSave(saveCtx, blob, 'frame-' + (i + 1) + '.png');
+    toast('已保存第 ' + (i + 1) + ' 帧' + (how === 'picker' ? '' : '；若被系统拦截请右键→属性→解除锁定'), 'success');
+  } catch (e) {
+    toast('保存失败：' + e.message, 'error');
+  } finally {
+    if (saveCtx && saveCtx.writable) { try { await saveCtx.writable.close(); } catch (e) {} }
+  }
+}
+
+/* 图片跨域获取链：本地代理（推荐，先运行 python agnes-proxy.py）→ 公共 CORS 代理兜底 */
+const CORS_PROXIES = [
+  u => 'http://127.0.0.1:8001/?url=' + encodeURIComponent(u),
+  u => 'https://corsproxy.io/?url=' + encodeURIComponent(u),
+  u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+];
+async function fetchImageBlob(src) {
+  // 1) 直连（服务器开放 CORS 时最快）
+  try {
+    const res = await fetch(src, { mode: 'cors' });
+    if (res.ok) return await res.blob();
+  } catch (e) {}
+  // 2) 依次尝试公共 CORS 代理
+  for (const proxy of CORS_PROXIES) {
+    try {
+      const res = await fetch(proxy(src), { mode: 'cors' });
+      if (res.ok) {
+        const blob = await res.blob();
+        if (blob.size > 256) return blob; // 防代理返回错误页（错误页通常很小）
+      }
+    } catch (e) {}
+  }
+  throw new Error('跨域获取图片失败（服务器未开放 CORS，代理也暂不可用）');
+}
+
+async function loadImageSafe(src) {
+  // http(s) 跨域图：先转 Blob → objectURL（同源资源，canvas 不会被污染）
+  let url = src, revoke = null;
+  if (/^https?:/i.test(src)) {
+    const blob = await fetchImageBlob(src);
+    url = URL.createObjectURL(blob);
+    revoke = url;
+  }
+  const im = new Image();
+  await new Promise((res, rej) => {
+    im.onload = res;
+    im.onerror = () => rej(new Error('图片数据无效，请重试'));
+    im.src = url;
+  });
+  if (revoke) setTimeout(() => URL.revokeObjectURL(revoke), 1500);
+  return im;
+}
+
+async function loadFramePixels(src, size) {
+  const im = await loadImageSafe(src);
+  const c = document.createElement('canvas');
+  c.width = size; c.height = size;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, size, size);
+  ctx.drawImage(im, 0, 0, size, size);
+  return ctx.getImageData(0, 0, size, size);
+}
+function toOpaque(data) {
+  // 入参为 Uint8ClampedArray（RGBA 像素数组），把半透明像素合成到白底上
+  const d = data;
+  const out = new Uint8ClampedArray(d.length);
+  for (let i = 0; i < d.length; i += 4) {
+    const a = d[i + 3];
+    if (a >= 250) { out[i] = d[i]; out[i+1] = d[i+1]; out[i+2] = d[i+2]; out[i+3] = 255; }
+    else {
+      const f = a / 255;
+      out[i] = d[i] * f + 255 * (1 - f);
+      out[i+1] = d[i+1] * f + 255 * (1 - f);
+      out[i+2] = d[i+2] * f + 255 * (1 - f);
+      out[i+3] = 255;
+    }
+  }
+  return out;
+}
+
+/* ================= 极简 GIF89a 编码器（无依赖） ================= */
+function gifEncode(frames, opts = {}) {
+  const w = frames[0].w, h = frames[0].h;
+  const delay = Math.max(2, Math.min(65535, Math.round(opts.delayCenti || 8)));
+  const loop = opts.loop == null ? 0 : opts.loop;
+
+  // ---- 1. 构建 256 色板（5-5-5 桶统计） ----
+  const buckets = new Map();
+  const keyOf = (r, g, b) => ((r >> 3) << 10) | ((g >> 3) << 5) | (b >> 3);
+  for (const f of frames) {
+    const d = f.data;
+    for (let i = 0; i < d.length; i += 4) {
+      const k = keyOf(d[i], d[i + 1], d[i + 2]);
+      let b = buckets.get(k);
+      if (!b) { b = { r: 0, g: 0, b: 0, n: 0 }; buckets.set(k, b); }
+      b.r += d[i]; b.g += d[i + 1]; b.b += d[i + 2]; b.n++;
+    }
+  }
+  const sorted = [...buckets.entries()].sort((a, b) => b[1].n - a[1].n).slice(0, 256);
+  const palette = [], lut = new Map();
+  sorted.forEach(([k, b], idx) => {
+    palette.push([b.r / b.n | 0, b.g / b.n | 0, b.b / b.n | 0]);
+    lut.set(k, idx);
+  });
+  while (palette.length < 256) palette.push([0, 0, 0]);
+  function nearest(r, g, b) {
+    let bi = 0, bd = 1e9;
+    for (let i = 0; i < palette.length; i++) {
+      const c = palette[i], dr = c[0] - r, dg = c[1] - g, db = c[2] - b;
+      const d = dr * dr + dg * dg + db * db;
+      if (d < bd) { bd = d; bi = i; }
+    }
+    return bi;
+  }
+  const indexData = frames.map(f => {
+    const idx = new Uint8Array(w * h);
+    const d = f.data;
+    for (let i = 0, j = 0; i < d.length; i += 4, j++) {
+      const r = d[i], g = d[i + 1], b = d[i + 2];
+      const k = keyOf(r, g, b);
+      const pi = lut.get(k);
+      idx[j] = pi === undefined ? nearest(r, g, b) : pi;
+    }
+    return idx;
+  });
+
+  // ---- 2. LZW 编码（码宽调整时序与 giflib/gifenc 一致：在 freeEnt 递增前检查） ----
+  function lzw(minCodeSize, pixels) {
+    const BITS = 12;
+    const clearCode = 1 << minCodeSize;   // 256
+    const eoiCode = clearCode + 1;        // 257
+    let codeSize = minCodeSize + 1;       // 9
+    let maxcode = (1 << codeSize) - 1;    // 511
+    let freeEnt = eoiCode + 1;            // 258
+    let clearPending = false;
+    const dict = new Map();
+    const bits = [], out = [];
+    const output = code => {
+      // 以当前 codeSize 写入码字
+      for (let i = 0; i < codeSize; i++) bits.push((code >> i) & 1);
+      while (bits.length >= 8) {
+        let b = 0; for (let i = 0; i < 8; i++) b |= bits.shift() << i;
+        out.push(b);
+      }
+      // 码宽调整（先检查，后由调用方递增 freeEnt）
+      if (freeEnt > maxcode || clearPending) {
+        if (clearPending) {
+          codeSize = minCodeSize + 1;
+          maxcode = (1 << codeSize) - 1;
+          clearPending = false;
+        } else {
+          codeSize++;
+          maxcode = codeSize === BITS ? (1 << codeSize) : (1 << codeSize) - 1;
+        }
+      }
+    };
+    output(clearCode);
+    let cur = -1;
+    for (const px of pixels) {
+      if (cur < 0) { cur = px; continue; }
+      const key = (cur << 8) | px;
+      if (dict.has(key)) { cur = dict.get(key); }
+      else {
+        output(cur);
+        cur = px;
+        if (freeEnt < (1 << BITS)) {
+          dict.set(key, freeEnt++);
+        } else {
+          // 字典满：清表并输出 Clear 码（以当前码宽写入）
+          dict.clear();
+          freeEnt = eoiCode + 1;
+          clearPending = true;
+          output(clearCode);
+        }
+      }
+    }
+    if (cur >= 0) output(cur);
+    output(eoiCode);
+    if (bits.length) {
+      let b = 0; for (let i = 0; i < 8; i++) b |= (bits.shift() || 0) << i;
+      out.push(b);
+    }
+    return out;
+  }
+
+  // ---- 3. 打包字节流 ----
+  const bytes = [];
+  const push = (...bs) => bytes.push(...bs);
+  const push16 = v => { push(v & 255, (v >> 8) & 255); };
+  push(0x47, 0x49, 0x46, 0x38, 0x39, 0x61);            // "GIF89a"
+  push16(w); push16(h);
+  push(0xF7);                                           // GCT: 有全局表, 256 色
+  push(0); push(0);                                     // bg, aspect
+  for (let i = 0; i < 256; i++) push(palette[i][0], palette[i][1], palette[i][2]);
+  push(0x21, 0xFF, 0x0B);                               // NETSCAPE loop 扩展
+  for (const ch of 'NETSCAPE2.0') push(ch.charCodeAt(0));
+  push(0x03, 0x01); push16(loop); push(0);
+  for (let f = 0; f < frames.length; f++) {
+    push(0x21, 0xF9, 0x04, 0x04);                       // GCE（不透明, 不处置）
+    push16(delay); push(0); push(0);
+    push(0x2C); push16(0); push16(0); push16(w); push16(h); push(0); // 图像描述符
+    push(8);                                            // LZW 最小码长
+    const comp = lzw(8, indexData[f]);
+    for (let i = 0; i < comp.length; i += 255) {
+      const chunk = comp.slice(i, i + 255);
+      push(chunk.length, ...chunk);
+    }
+    push(0);
+  }
+  push(0x3B);                                           // 尾部
+  return new Uint8Array(bytes);
+}
+
+/* ================= 文件保存（优先 File System Access API：直接写入所选位置，不带“来自 Internet”标记，不会被 Windows 拦截） ================= */
+async function beginSave(suggestedName, accept) {
+  if (!window.showSaveFilePicker) return null;   // 浏览器不支持 → 回退普通下载
+  try {
+    const handle = await window.showSaveFilePicker({
+      suggestedName,
+      types: [{ description: '图像文件', accept }],
+    });
+    const writable = await handle.createWritable();
+    return { writable };
+  } catch (e) {
+    if (e.name === 'AbortError') return 'cancelled'; // 用户取消
+    return null;                                      // 其他错误 → 回退下载
+  }
+}
+async function commitSave(saveCtx, blob, fallbackName) {
+  if (saveCtx && saveCtx.writable) {
+    try {
+      await saveCtx.writable.write(blob);
+      await saveCtx.writable.close();
+      saveCtx.writable = null;
+      return 'picker';
+    } catch (e) {
+      try { await saveCtx.writable.close(); } catch (e2) {}
+      saveCtx.writable = null;
+      throw e;
+    }
+  }
+  // 回退：普通下载（文件可能带“来自 Internet”标记）
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = fallbackName;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1200);
+  return 'download';
+}
+
+async function exportGif() {
+  if (!state.frames.length) return;
+  const size = state.exportSize;
+  const btn = btnGif;
+  btn.disabled = true; btn.querySelector('span').textContent = '合成中…';
+  let saveCtx = null;
+  try {
+    saveCtx = await beginSave('animation-' + Date.now() + '.gif', { 'image/gif': ['.gif'] });
+    if (saveCtx === 'cancelled') return;
+    const gframes = [];
+    for (const f of state.frames) {
+      const imgData = await loadFramePixels(f.src, size);
+      gframes.push({ w: size, h: size, data: toOpaque(imgData.data) });
+    }
+    const delay = Math.round(100 / state.fps);
+    const gif = gifEncode(gframes, { delayCenti: delay, loop: 0 });
+    const blob = new Blob([gif], { type: 'image/gif' });
+    const how = await commitSave(saveCtx, blob, 'animation-' + Date.now() + '.gif');
+    toast(`GIF 已导出（${size}px · ${state.frames.length}帧 · 循环播放）${how === 'picker' ? '' : '；若被系统拦截请右键→属性→解除锁定'}`, 'success');
+  } catch (e) {
+    toast('GIF 导出失败：' + e.message, 'error');
+  } finally {
+    if (saveCtx && saveCtx.writable) { try { await saveCtx.writable.close(); } catch (e) {} }
+    btn.disabled = false; btn.querySelector('span').textContent = '导出 GIF';
+  }
+}
+btnGif.onclick = exportGif;
+
+async function exportSprite() {
+  if (!state.frames.length) return;
+  const size = state.exportSize;
+  const n = state.frames.length;
+  const cols = n <= 8 ? n : Math.ceil(Math.sqrt(n));
+  const rows = Math.ceil(n / cols);
+  const btn = btnSprite;
+  btn.disabled = true; btn.querySelector('span').textContent = '合成中…';
+  let saveCtx = null;
+  try {
+    saveCtx = await beginSave('sprite-' + Date.now() + '.png', { 'image/png': ['.png'] });
+    if (saveCtx === 'cancelled') return;
+    const c = document.createElement('canvas');
+    c.width = cols * size; c.height = rows * size;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+    for (let i = 0; i < n; i++) {
+      // 必须用 Blob 加载后的图片绘制，直接用跨域图会污染 canvas
+      const im = await loadImageSafe(state.frames[i].src);
+      ctx.drawImage(im, (i % cols) * size, Math.floor(i / cols) * size, size, size);
+    }
+    const blob = await new Promise(r => c.toBlob(b => r(b), 'image/png'));
+    if (!blob) throw new Error('PNG 编码失败');
+    const how = await commitSave(saveCtx, blob, 'sprite-' + Date.now() + '.png');
+    toast(`雪碧图已导出（${cols}列 × ${rows}行，共 ${n} 帧）${how === 'picker' ? '' : '；若被系统拦截请右键→属性→解除锁定'}`, 'success');
+  } catch (e) {
+    toast('雪碧图导出失败：' + e.message, 'error');
+  } finally {
+    if (saveCtx && saveCtx.writable) { try { await saveCtx.writable.close(); } catch (e) {} }
+    btn.disabled = false; btn.querySelector('span').textContent = '导出雪碧图';
+  }
+}
+btnSprite.onclick = exportSprite;
+
+/* ================= 动画历史 ================= */
+const LS_ANIM_HISTORY = 'agnes_anim_history_v1';
+const MAX_HISTORY = 20;
+let animHistory = [];
+
+function loadAnimHistory() {
+  try { animHistory = JSON.parse(localStorage.getItem(LS_ANIM_HISTORY) || '[]'); } catch (e) { animHistory = []; }
+}
+function saveAnimHistory() {
+  try {
+    localStorage.setItem(LS_ANIM_HISTORY, JSON.stringify(animHistory));
+    return 'full';
+  } catch (e) {
+    try {
+      // 超出配额：只保留缩略图（原帧较大时降级为预览）
+      const slim = animHistory.map(h => ({ ...h, frames: h.thumbs }));
+      localStorage.setItem(LS_ANIM_HISTORY, JSON.stringify(slim));
+      return 'slim';
+    } catch (e2) {
+      try { localStorage.removeItem(LS_ANIM_HISTORY); } catch (e3) {}
+      return false;
+    }
+  }
+}
+
+/* ---- IndexedDB：全分辨率帧存储（localStorage 放不下大图，存这里刷新后依然清晰） ---- */
+function openAnimDB() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open('agnes_anim_db', 1);
+    req.onupgradeneeded = () => {
+      if (!req.result.objectStoreNames.contains('frames')) {
+        req.result.createObjectStore('frames');
+      }
+    };
+    req.onsuccess = () => res(req.result);
+    req.onerror = () => rej(req.error);
+  });
+}
+async function saveFramesToDB(id, srcs) {
+  try {
+    const db = await openAnimDB();
+    await new Promise((res, rej) => {
+      const tx = db.transaction('frames', 'readwrite');
+      tx.objectStore('frames').put(srcs, id);
+      tx.oncomplete = res;
+      tx.onerror = () => rej(tx.error);
+    });
+    return true;
+  } catch (e) { return false; }
+}
+async function loadFramesFromDB(id) {
+  try {
+    const db = await openAnimDB();
+    return await new Promise((res, rej) => {
+      const tx = db.transaction('frames', 'readonly');
+      const rq = tx.objectStore('frames').get(id);
+      rq.onsuccess = () => res(rq.result || null);
+      rq.onerror = () => rej(rq.error);
+    });
+  } catch (e) { return null; }
+}
+async function deleteFramesFromDB(id) {
+  try {
+    const db = await openAnimDB();
+    await new Promise((res, rej) => {
+      const tx = db.transaction('frames', 'readwrite');
+      tx.objectStore('frames').delete(id);
+      tx.oncomplete = res;
+      tx.onerror = () => rej(tx.error);
+    });
+  } catch (e) {}
+}
+async function makeThumb(src) {
+  if (/^https?:/i.test(src)) return src; // 跨域 URL 直接展示，不经过 canvas
+  try {
+    const im = new Image();
+    await new Promise((res, rej) => { im.onload = res; im.onerror = rej; im.src = src; });
+    const maxW = 160;
+    const scale = Math.min(1, maxW / (im.naturalWidth || 1));
+    const c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(im.naturalWidth * scale));
+    c.height = Math.max(1, Math.round(im.naturalHeight * scale));
+    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+    return c.toDataURL('image/jpeg', 0.7);
+  } catch (e) { return src; }
+}
+async function addAnimHistory() {
+  if (!state.frames.length) return false;
+  const thumbs = [];
+  for (const f of state.frames) thumbs.push(await makeThumb(f.src));
+  const entry = {
+    id: Date.now() + Math.random().toString(36).slice(2, 7),
+    ts: Date.now(),
+    charDesc: charDescEl.value.trim(),
+    action: actionDescEl.value.trim(),
+    frameCount: state.frames.length,
+    fps: state.fps,
+    bg: state.bg,
+    chain: state.chain,
+    script: state.script,
+    frames: [],
+    thumbs,
+    model: state.model, tier: state.tier, ratio: state.ratio, size2: state.size2,
+  };
+  // 全分辨率帧优先存 IndexedDB（容量大，刷新后依然清晰）
+  const dbOk = await saveFramesToDB(entry.id, state.frames.map(f => f.src));
+  if (!dbOk) {
+    // IndexedDB 不可用时回退：帧塞进 localStorage（可能触发缩略图降级）
+    entry.frames = state.frames.map(f => f.src);
+  }
+  animHistory.unshift(entry);
+  if (animHistory.length > MAX_HISTORY) {
+    animHistory.slice(MAX_HISTORY).forEach(h => deleteFramesFromDB(h.id));
+    animHistory.length = MAX_HISTORY;
+  }
+  const saved = saveAnimHistory();
+  renderAnimHistory();
+  return dbOk ? 'db' : saved;
+}
+function renderAnimHistory() {
+  animHistoryGrid.innerHTML = '';
+  if (!animHistory.length) {
+    const d = document.createElement('div');
+    d.className = 'history-empty';
+    d.textContent = '暂无记录，生成的动画会自动保存在这里（本机缓存）';
+    animHistoryGrid.appendChild(d);
+    return;
+  }
+  animHistory.forEach(h => {
+    const card = document.createElement('div');
+    card.className = 'h-card';
+    const thumb = h.thumbs && h.thumbs[0] ? h.thumbs[0] : '';
+    card.innerHTML = `
+      <div class="imgbox">
+        <img src="${escapeHtml(thumb)}" loading="lazy" alt="">
+        <div class="play-ico">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="rgba(255,255,255,.92)"><polygon points="7 4 20 12 7 20 7 4"/></svg>
+        </div>
+        <span class="h-num">${h.frameCount || (h.frames || h.thumbs || []).length} 帧</span>
+      </div>
+      <div class="meta">
+        <div class="p">${escapeHtml(h.action || h.charDesc || '动画')}</div>
+        <div class="sub"><span>${h.fps || 12}FPS · ${h.chain === 'chain' ? '接力' : '锚定'}</span><span>${relTime(h.ts)}</span></div>
+      </div>`;
+    const del = document.createElement('button');
+    del.className = 'del';
+    del.title = '删除';
+    del.textContent = '×';
+    del.onclick = e => {
+      e.stopPropagation();
+      deleteFramesFromDB(h.id);
+      animHistory = animHistory.filter(x => x.id !== h.id);
+      saveAnimHistory(); renderAnimHistory();
+    };
+    card.appendChild(del);
+    card.onclick = () => loadAnimFromHistory(h);
+    animHistoryGrid.appendChild(card);
+  });
+}
+async function loadAnimFromHistory(h) {
+  // 还原参数设置
+  charDescEl.value = h.charDesc || '';
+  actionDescEl.value = h.action || '';
+  state.model = h.model === MODEL_20 ? MODEL_20 : MODEL_21;
+  state.tier = h.tier || '1K';
+  state.ratio = h.ratio || '1:1';
+  state.size2 = h.size2 || '1024x1024';
+  applyModelUI();
+  setSeg(tierSeg, 'tier', state.tier);
+  setSeg(ratioSeg, 'ratio', state.ratio);
+  setSeg(size2Seg, 'size', state.size2);
+  state.frameCount = (h.frames || h.thumbs || []).length || h.frameCount || 6;
+  state.fps = h.fps || 12;
+  state.bg = h.bg || 'white';
+  state.chain = h.chain || 'anchor';
+  fpsInput.value = state.fps; fpsVal.textContent = state.fps;
+  setSeg(frameCountSeg, 'n', state.frameCount);
+  setSeg(bgSeg, 'bg', state.bg);
+  setSeg(chainSeg, 'chain', state.chain);
+  // 还原帧与脚本（优先从 IndexedDB 取全分辨率帧）
+  let srcs = await loadFramesFromDB(h.id);
+  if (!srcs || !srcs.length) srcs = (h.frames && h.frames.length) ? h.frames : (h.thumbs || []);
+  state.frames = srcs.map(src => ({ src, prompt: '' }));
+  state.script = h.script || [];
+  await presentResult();
+  const failed = frameImgs.filter(x => !x).length;
+  if (failed) toast(failed + ' 帧图片已失效（历史 URL 可能过期），建议重新生成', 'error');
+  else toast('已载入历史动画（' + state.frames.length + ' 帧）', 'success');
+}
+clearAnimHistory.onclick = () => {
+  if (!animHistory.length) return;
+  animHistory.forEach(h => deleteFramesFromDB(h.id));
+  animHistory = [];
+  saveAnimHistory(); renderAnimHistory();
+  toast('动画历史已清空', 'info');
+};
+
+/* ================= 事件绑定 ================= */
+frameCountSeg.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.frameCount = Number(b.dataset.n);
+  setSeg(frameCountSeg, 'n', state.frameCount);
+  saveSettings();
+});
+bgSeg.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.bg = b.dataset.bg;
+  setSeg(bgSeg, 'bg', state.bg);
+  saveSettings();
+});
+chainSeg.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.chain = b.dataset.chain;
+  setSeg(chainSeg, 'chain', state.chain);
+  saveSettings();
+});
+exportSizeSeg.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.exportSize = Number(b.dataset.s);
+  setSeg(exportSizeSeg, 's', state.exportSize);
+  saveSettings();
+});
+
+/* ================= 模型与输出尺寸 ================= */
+function applyModelUI() {
+  const is21 = state.model === MODEL_21;
+  $('sizeControl21').style.display = is21 ? '' : 'none';
+  $('sizeControl2').style.display = is21 ? 'none' : '';
+  setSeg(modelSeg, 'model', state.model);
+  if (is21) updateComputedSize();
+}
+function updateComputedSize() {
+  const dim = (SIZE_TABLE[state.ratio] || {})[state.tier] || '';
+  computedSize.innerHTML = `输出 <b>${dim}</b> px${state.tier === '4K' ? '（分辨率较高，耗时更久）' : ''}`;
+}
+modelSeg.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.model = b.dataset.model;
+  applyModelUI(); saveSettings();
+});
+tierSeg.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.tier = b.dataset.tier;
+  setSeg(tierSeg, 'tier', state.tier); updateComputedSize(); saveSettings();
+});
+ratioSeg.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.ratio = b.dataset.ratio;
+  setSeg(ratioSeg, 'ratio', state.ratio); updateComputedSize(); saveSettings();
+});
+size2Seg.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.size2 = b.dataset.size;
+  setSeg(size2Seg, 'size', state.size2); saveSettings();
+});
+fpsInput.addEventListener('input', () => {
+  state.fps = Number(fpsInput.value);
+  fpsVal.textContent = state.fps;
+  playFps.textContent = state.fps;
+  saveSettings();
+});
+charDescEl.addEventListener('input', saveSettings);
+actionDescEl.addEventListener('input', saveSettings);
+apiKeyEl.addEventListener('input', saveKey);
+toggleKey.onclick = () => {
+  const show = apiKeyEl.type === 'password';
+  apiKeyEl.type = show ? 'text' : 'password';
+  eyeOpen.style.display = show ? 'none' : '';
+  eyeOff.style.display = show ? '' : 'none';
+};
+
+/* ================= 设置面板（标题栏） ================= */
+settingsBtn.onclick = (e) => {
+  e.stopPropagation();
+  settingsPanel.hidden = !settingsPanel.hidden;
+};
+settingsClose.onclick = () => { settingsPanel.hidden = true; };
+document.addEventListener('click', (e) => {
+  if (!settingsPanel.hidden && !settingsPanel.contains(e.target) && !settingsBtn.contains(e.target)) {
+    settingsPanel.hidden = true;
+  }
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !settingsPanel.hidden) settingsPanel.hidden = true;
+});
+
+/* ================= 初始化 ================= */
+(function init() {
+  loadSettings();
+  applyModelUI();
+  setSeg(tierSeg, 'tier', state.tier);
+  setSeg(ratioSeg, 'ratio', state.ratio);
+  setSeg(size2Seg, 'size', state.size2);
+  setSeg(frameCountSeg, 'n', state.frameCount);
+  setSeg(bgSeg, 'bg', state.bg);
+  setSeg(chainSeg, 'chain', state.chain);
+  setSeg(exportSizeSeg, 's', state.exportSize);
+  fpsInput.value = state.fps;
+  fpsVal.textContent = state.fps;
+  loadAnimHistory();
+  renderAnimHistory();
+  loadNotices();
+  renderNotices(false);
+  updateNoticeBadge();
+})();
+</script>
+</body>
+</html>
